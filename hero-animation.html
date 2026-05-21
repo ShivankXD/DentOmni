@@ -1,0 +1,1197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DentOmni — AI Dental Diagnostics</title>
+  <meta name="description" content="DentOmni uses cutting-edge AI to detect dental caries and periapical lesions from X-ray images with precision bounding boxes and confidence scores." />
+
+  <!-- ① FONT: Inter (Display) + Geist Mono look-alike via JetBrains Mono for mono details -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+
+  <style>
+    /* ══════════════════════════════════════════
+       DESIGN TOKENS
+    ══════════════════════════════════════════ */
+    :root {
+      /* palette */
+      --neon-blue:    #00c8f8;
+      --neon-cyan:    #00f0d4;
+      --amber:        #ffb347;
+      --deep-amber:   #ff7b1a;
+      --lesion-red:   #ff3c6e;
+      --bg-void:      #030609;
+      --bg-dark:      #050c17;
+      --bg-mid:       #081423;
+      --surface-1:    rgba(8, 20, 40, 0.55);
+      --surface-2:    rgba(0, 200, 248, 0.055);
+      --border-glass: rgba(0, 200, 248, 0.14);
+      --border-dim:   rgba(255, 255, 255, 0.065);
+      --text-100:     #eef6ff;
+      --text-200:     #b8d4ec;
+      --text-400:     #6a96bc;
+      --text-600:     #3d6080;
+
+      /* type scale */
+      --font-display: 'Inter', system-ui, sans-serif;
+      --font-mono:    'JetBrains Mono', monospace;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      width: 100%; height: 100%;
+      background: var(--bg-void);
+      color: var(--text-100);
+      font-family: var(--font-display);
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    /* ══════════════════════════════════════════
+       SCROLLBAR
+    ══════════════════════════════════════════ */
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-track { background: var(--bg-void); }
+    ::-webkit-scrollbar-thumb { background: rgba(0,200,248,0.2); border-radius: 3px; }
+
+    /* ══════════════════════════════════════════
+       HERO SHELL
+    ══════════════════════════════════════════ */
+    #hero {
+      position: relative;
+      width: 100vw;
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 1fr;
+      grid-template-rows: 1fr auto;
+      align-items: center;
+      overflow: hidden;
+    }
+
+    /* deep radial backdrop */
+    #hero::before {
+      content: '';
+      position: absolute; inset: 0;
+      background:
+        radial-gradient(ellipse 75% 55% at 58% 38%, rgba(0, 80, 160, 0.20) 0%, transparent 65%),
+        radial-gradient(ellipse 50% 38% at 72% 68%, rgba(0, 200, 248, 0.07) 0%, transparent 55%),
+        radial-gradient(ellipse 40% 30% at 20% 75%, rgba(0, 60, 120, 0.10) 0%, transparent 55%),
+        linear-gradient(155deg, #030609 0%, #050c17 55%, #040a14 100%);
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    /* ② CENTER ASSET VIGNETTE MASK — dark radial overlay that frames the 3D model */
+    #hero::after {
+      content: '';
+      position: absolute; inset: 0;
+      background:
+        radial-gradient(ellipse 62% 70% at 58% 46%, transparent 30%, rgba(3,6,9,0.70) 70%, rgba(3,6,9,0.96) 100%);
+      z-index: 4;
+      pointer-events: none;
+    }
+
+    /* canvases */
+    #dental-canvas {
+      position: absolute; inset: 0;
+      width: 100%; height: 100%;
+      z-index: 1;
+    }
+    #particle-canvas {
+      position: absolute; inset: 0;
+      width: 100%; height: 100%;
+      z-index: 2;
+      pointer-events: none;
+    }
+
+    /* subtle grid lines */
+    .grid-bg {
+      position: absolute; inset: 0;
+      background-image:
+        linear-gradient(rgba(0,200,248,0.018) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,200,248,0.018) 1px, transparent 1px);
+      background-size: 64px 64px;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    /* ══════════════════════════════════════════
+       HERO INNER LAYOUT
+    ══════════════════════════════════════════ */
+    .hero-inner {
+      position: relative;
+      z-index: 10;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      padding: 0 7vw;
+      padding-top: 12vh;
+    }
+
+    /* ══════════════════════════════════════════
+       ① BADGE
+    ══════════════════════════════════════════ */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      background: rgba(0, 200, 248, 0.08);
+      border: 1px solid rgba(0, 200, 248, 0.22);
+      border-radius: 100px;
+      padding: 6px 18px 6px 12px;
+      font-size: 10.5px;
+      font-weight: 600;
+      letter-spacing: 2.2px;
+      text-transform: uppercase;
+      color: var(--neon-blue);
+      margin-bottom: 30px;
+      animation: fadeInUp 0.8s cubic-bezier(0.22,1,0.36,1) both;
+    }
+    .badge-dot {
+      width: 7px; height: 7px;
+      background: var(--neon-blue);
+      border-radius: 50%;
+      box-shadow: 0 0 10px var(--neon-blue), 0 0 4px var(--neon-blue);
+      animation: pulse-dot 2.2s ease infinite;
+      flex-shrink: 0;
+    }
+
+    /* ══════════════════════════════════════════
+       ① HEADLINE — Inter, tighter line-height
+    ══════════════════════════════════════════ */
+    h1 {
+      font-family: var(--font-display);
+      font-size: clamp(2.2rem, 4.6vw, 4.4rem);
+      font-weight: 800;
+      line-height: 1.08;
+      letter-spacing: -1.5px;
+      color: var(--text-100);
+      margin-bottom: 20px;
+      animation: fadeInUp 0.9s 0.1s cubic-bezier(0.22,1,0.36,1) both;
+      max-width: 620px;
+    }
+    /* split-word decoration */
+    h1 em {
+      font-style: normal;
+      display: block;
+      font-size: 0.92em;
+      font-weight: 300;
+      color: var(--text-400);
+      letter-spacing: -0.5px;
+      margin-bottom: 4px;
+    }
+    h1 .gradient-text {
+      background: linear-gradient(102deg, #00c8f8 0%, #00f0d4 45%, #7b8fff 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    /* ══════════════════════════════════════════
+       HERO DESCRIPTION
+    ══════════════════════════════════════════ */
+    .hero-desc {
+      font-size: 0.97rem;
+      font-weight: 400;
+      color: var(--text-400);
+      line-height: 1.78;
+      max-width: 480px;
+      margin-bottom: 38px;
+      animation: fadeInUp 0.9s 0.2s cubic-bezier(0.22,1,0.36,1) both;
+    }
+    .hero-desc strong {
+      color: var(--text-200);
+      font-weight: 500;
+    }
+
+    /* ══════════════════════════════════════════
+       ④ BUTTONS — premium hover glow + icon
+    ══════════════════════════════════════════ */
+    .hero-ctas {
+      display: flex;
+      gap: 14px;
+      animation: fadeInUp 0.9s 0.3s cubic-bezier(0.22,1,0.36,1) both;
+      pointer-events: all;
+      margin-bottom: 56px;
+    }
+
+    /* shared base */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      padding: 13px 28px;
+      border-radius: 10px;
+      font-family: var(--font-display);
+      font-size: 0.9rem;
+      font-weight: 600;
+      letter-spacing: 0.3px;
+      cursor: pointer;
+      border: none;
+      outline: none;
+      position: relative;
+      overflow: hidden;
+      transition:
+        transform 0.22s cubic-bezier(0.22,1,0.36,1),
+        box-shadow 0.22s ease;
+    }
+    .btn::after {
+      content: '';
+      position: absolute; inset: 0;
+      border-radius: inherit;
+      opacity: 0;
+      transition: opacity 0.22s ease;
+    }
+
+    /* primary — glowing CTA */
+    .btn-primary {
+      background: linear-gradient(135deg, #0098db 0%, #00c8f8 50%, #00e8c0 100%);
+      color: #fff;
+      box-shadow:
+        0 0 0   0px rgba(0,200,248, 0.5),
+        0 4px 18px rgba(0,0,0, 0.4),
+        inset 0 1px 0 rgba(255,255,255,0.2);
+    }
+    .btn-primary::after {
+      background: radial-gradient(circle at 50% 50%, rgba(255,255,255,0.18) 0%, transparent 70%);
+    }
+    .btn-primary:hover {
+      transform: translateY(-3px);
+      box-shadow:
+        0 0 32px 8px rgba(0,200,248,0.38),
+        0 8px 28px rgba(0,0,0, 0.45),
+        inset 0 1px 0 rgba(255,255,255,0.25);
+    }
+    .btn-primary:hover::after { opacity: 1; }
+    .btn-primary:active { transform: translateY(-1px); }
+
+    /* icon pulse ring inside button */
+    .btn-icon {
+      width: 18px; height: 18px;
+      display: grid; place-items: center;
+      background: rgba(255,255,255,0.18);
+      border-radius: 50%;
+      flex-shrink: 0;
+      font-size: 10px;
+      line-height: 1;
+    }
+
+    /* secondary — clean outlined glass */
+    .btn-secondary {
+      background: rgba(255,255,255,0.03);
+      color: var(--text-200);
+      border: 1px solid var(--border-dim);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.05);
+    }
+    .btn-secondary:hover {
+      transform: translateY(-3px);
+      border-color: rgba(0,200,248,0.35);
+      background: rgba(0,200,248,0.06);
+      box-shadow:
+        0 0 18px 2px rgba(0,200,248,0.12),
+        inset 0 1px 0 rgba(255,255,255,0.07);
+      color: var(--text-100);
+    }
+    .btn-secondary:active { transform: translateY(-1px); }
+
+    /* ══════════════════════════════════════════
+       ⑤ STATS ROW — grid layout, clean dividers
+    ══════════════════════════════════════════ */
+    .stats-row {
+      position: relative;
+      z-index: 10;
+      width: 100%;
+      padding: 0 7vw 6vh;
+      animation: fadeInUp 0.9s 0.42s cubic-bezier(0.22,1,0.36,1) both;
+    }
+
+    /* faint top rule */
+    .stats-rule {
+      width: 100%;
+      max-width: 560px;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(0,200,248,0.18) 30%, rgba(255,255,255,0.06) 70%, transparent);
+      margin-bottom: 28px;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(3, auto);
+      gap: 0;
+      width: fit-content;
+    }
+
+    .stat-item {
+      padding: 0 44px 0 0;
+      position: relative;
+    }
+    .stat-item + .stat-item {
+      padding-left: 44px;
+    }
+    .stat-item + .stat-item::before {
+      content: '';
+      position: absolute;
+      left: 0; top: 4px; bottom: 4px;
+      width: 1px;
+      background: linear-gradient(to bottom, transparent, rgba(255,255,255,0.1) 30%, rgba(255,255,255,0.1) 70%, transparent);
+    }
+
+    .stat-num {
+      font-size: 2.05rem;
+      font-weight: 800;
+      letter-spacing: -1px;
+      line-height: 1;
+      background: linear-gradient(100deg, #00c8f8, #00f0d4 60%, #a0b0ff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 6px;
+    }
+    .stat-label {
+      font-size: 0.72rem;
+      font-weight: 500;
+      color: var(--text-600);
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+    }
+
+    /* ══════════════════════════════════════════
+       ② GLASSMORPHISM HUD PANEL
+    ══════════════════════════════════════════ */
+    .hud-panel {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      right: 4.5%;
+      width: 234px;
+      /* TRUE glassmorphism */
+      background:
+        linear-gradient(135deg,
+          rgba(4, 18, 42, 0.62) 0%,
+          rgba(2, 10, 24, 0.78) 100%
+        );
+      backdrop-filter: blur(28px) saturate(180%);
+      -webkit-backdrop-filter: blur(28px) saturate(180%);
+      border: 1px solid var(--border-glass);
+      border-top-color: rgba(0, 200, 248, 0.28);
+      border-radius: 18px;
+      padding: 22px 22px 18px;
+      z-index: 11;
+      box-shadow:
+        0 0 0 1px rgba(255,255,255,0.03) inset,
+        0 8px 48px rgba(0,0,0,0.55),
+        0 0 40px rgba(0,200,248,0.06),
+        0 2px 0 rgba(0,200,248,0.12) inset;
+      animation: hudSlideIn 0.9s 1.4s cubic-bezier(0.22,1,0.36,1) both;
+      opacity: 0;
+    }
+
+    /* subtle noise texture overlay for depth */
+    .hud-panel::before {
+      content: '';
+      position: absolute; inset: 0;
+      border-radius: inherit;
+      background: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+      background-size: 120px 120px;
+      opacity: 0.35;
+      pointer-events: none;
+    }
+
+    @keyframes hudSlideIn {
+      from { opacity: 0; transform: translateY(calc(-50% + 20px)); }
+      to   { opacity: 1; transform: translateY(-50%); }
+    }
+
+    /* glowing top accent line */
+    .hud-accent-line {
+      width: 100%;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(0,200,248,0.6) 50%, transparent);
+      position: absolute;
+      top: 0; left: 0;
+      border-radius: 18px 18px 0 0;
+    }
+
+    .hud-title {
+      font-family: var(--font-mono);
+      font-size: 9px;
+      letter-spacing: 2.8px;
+      text-transform: uppercase;
+      color: var(--neon-blue);
+      margin-bottom: 18px;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+    .hud-title-icon {
+      opacity: 0.7;
+    }
+
+    .hud-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 8px;
+    }
+    .hud-label {
+      font-size: 10px;
+      color: var(--text-400);
+      font-weight: 400;
+      letter-spacing: 0.3px;
+    }
+    .hud-value {
+      font-family: var(--font-mono);
+      font-size: 11.5px;
+      font-weight: 500;
+      color: var(--text-100);
+    }
+    .hud-bar-wrap {
+      width: 100%;
+      height: 3px;
+      background: rgba(255,255,255,0.055);
+      border-radius: 4px;
+      margin-bottom: 14px;
+      overflow: hidden;
+    }
+    .hud-bar {
+      height: 100%;
+      border-radius: 4px;
+      width: 0%;
+      transition: width 0.4s ease;
+      position: relative;
+    }
+    .hud-bar::after {
+      content: '';
+      position: absolute;
+      right: 0; top: -2px; bottom: -2px;
+      width: 4px;
+      border-radius: 4px;
+      background: inherit;
+      filter: brightness(2.5) blur(3px);
+    }
+    .hud-bar.caries  { background: linear-gradient(90deg, rgba(255,179,71,0.6), #ffb347); }
+    .hud-bar.lesion  { background: linear-gradient(90deg, rgba(255,60,110,0.6), #ff3c6e); }
+    .hud-bar.healthy { background: linear-gradient(90deg, rgba(0,200,248,0.6), #00f0d4); }
+
+    .hud-divider {
+      border: none;
+      border-top: 1px solid rgba(255,255,255,0.055);
+      margin: 14px 0 12px;
+    }
+
+    .scan-status {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-family: var(--font-mono);
+      font-size: 9.5px;
+      color: var(--neon-blue);
+      font-weight: 500;
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+    }
+    .scan-status-dot {
+      width: 6px; height: 6px;
+      background: var(--neon-blue);
+      border-radius: 50%;
+      animation: pulse-dot 1.6s ease infinite;
+      box-shadow: 0 0 8px var(--neon-blue);
+      flex-shrink: 0;
+    }
+
+    /* ══════════════════════════════════════════
+       GLOW RINGS (center orb framing)
+    ══════════════════════════════════════════ */
+    .ring-outer {
+      position: absolute;
+      border-radius: 50%;
+      border: 1px solid rgba(0, 200, 248, 0.1);
+      animation: ringPulse 5s ease infinite;
+      pointer-events: none;
+      z-index: 3;
+    }
+    @keyframes ringPulse {
+      0%   { transform: translate(-50%,-50%) scale(1);    opacity: 0.45; }
+      50%  { transform: translate(-50%,-50%) scale(1.07); opacity: 0.12; }
+      100% { transform: translate(-50%,-50%) scale(1);    opacity: 0.45; }
+    }
+    .ring1 { width: 300px; height: 300px; top: 46%; left: 58%; animation-delay: 0s; }
+    .ring2 { width: 460px; height: 460px; top: 46%; left: 58%; animation-delay: 1.4s; }
+    .ring3 { width: 620px; height: 620px; top: 46%; left: 58%; animation-delay: 2.8s; }
+
+    /* ══════════════════════════════════════════
+       BOTTOM FADE
+    ══════════════════════════════════════════ */
+    .hero-fade {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 200px;
+      background: linear-gradient(to bottom, transparent, var(--bg-void));
+      z-index: 8;
+      pointer-events: none;
+    }
+
+    /* ══════════════════════════════════════════
+       KEYFRAMES
+    ══════════════════════════════════════════ */
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes pulse-dot {
+      0%, 100% { opacity: 1;   transform: scale(1); }
+      50%       { opacity: 0.4; transform: scale(0.65); }
+    }
+
+    /* ══════════════════════════════════════════
+       RESPONSIVE
+    ══════════════════════════════════════════ */
+    @media (max-width: 900px) {
+      .hud-panel { display: none; }
+      .ring1, .ring2, .ring3 { left: 50%; }
+    }
+    @media (max-width: 640px) {
+      .hero-inner { padding: 0 6vw; padding-top: 14vh; }
+      h1 { font-size: clamp(1.9rem, 7vw, 2.8rem); letter-spacing: -0.8px; }
+      .stats-grid { grid-template-columns: 1fr 1fr; gap: 24px 0; }
+      .stat-item + .stat-item { padding-left: 24px; }
+      .stat-item { padding-right: 24px; }
+      .stats-row { padding: 0 6vw 6vh; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════
+     HERO
+══════════════════════════════════════════ -->
+<section id="hero">
+  <div class="grid-bg"></div>
+  <canvas id="dental-canvas"></canvas>
+  <canvas id="particle-canvas"></canvas>
+
+  <!-- glow rings centred on the 3D model -->
+  <div class="ring-outer ring1"></div>
+  <div class="ring-outer ring2"></div>
+  <div class="ring-outer ring3"></div>
+
+  <!-- ② GLASSMORPHISM HUD PANEL -->
+  <div class="hud-panel" id="hudPanel">
+    <div class="hud-accent-line"></div>
+    <div class="hud-title">
+      <span class="hud-title-icon">⬡</span> Diagnostic Analysis
+    </div>
+
+    <div class="hud-row">
+      <span class="hud-label">Caries Probability</span>
+      <span class="hud-value" id="cariesVal">0%</span>
+    </div>
+    <div class="hud-bar-wrap"><div class="hud-bar caries" id="cariesBar"></div></div>
+
+    <div class="hud-row">
+      <span class="hud-label">Periapical Lesion</span>
+      <span class="hud-value" id="lesionVal">0%</span>
+    </div>
+    <div class="hud-bar-wrap"><div class="hud-bar lesion" id="lesionBar"></div></div>
+
+    <div class="hud-row">
+      <span class="hud-label">Healthy Tissue</span>
+      <span class="hud-value" id="healthyVal">0%</span>
+    </div>
+    <div class="hud-bar-wrap"><div class="hud-bar healthy" id="healthyBar"></div></div>
+
+    <hr class="hud-divider"/>
+    <div class="scan-status">
+      <div class="scan-status-dot"></div>
+      <span id="scanStatusText">INITIALIZING…</span>
+    </div>
+  </div>
+
+  <!-- ① HERO COPY — Inter typography -->
+  <div class="hero-inner">
+    <div class="badge"><div class="badge-dot"></div>AI-Powered Diagnostics</div>
+
+    <h1>
+      <em>Next-generation</em>
+      Detect Dental Disease<br/>
+      with <span class="gradient-text">Precision AI</span>
+    </h1>
+
+    <p class="hero-desc">
+      DentOmni fuses <strong>Faster R-CNN + ResNet-50</strong> deep learning to identify
+      <strong>caries</strong> and <strong>periapical lesions</strong> in dental X-rays —
+      returning bounding boxes and confidence scores in milliseconds.
+    </p>
+
+    <!-- ④ PREMIUM BUTTONS -->
+    <div class="hero-ctas">
+      <button class="btn btn-primary" id="analyzeBtn">
+        <span class="btn-icon">⚡</span>
+        Analyze X-Ray
+      </button>
+      <button class="btn btn-secondary" id="learnBtn">
+        How It Works ↗
+      </button>
+    </div>
+  </div>
+
+  <!-- ⑤ POLISHED STATS -->
+  <div class="stats-row">
+    <div class="stats-rule"></div>
+    <div class="stats-grid">
+      <div class="stat-item">
+        <div class="stat-num" id="acc-counter">0%</div>
+        <div class="stat-label">Detection Accuracy</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num" id="scans-counter">0+</div>
+        <div class="stat-label">Scans Processed</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num">2</div>
+        <div class="stat-label">Model Architectures</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="hero-fade"></div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     THREE.JS — 3D DENTAL SCENE
+══════════════════════════════════════════ -->
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://unpkg.com/three@0.165.0/build/three.module.js",
+    "three/addons/": "https://unpkg.com/three@0.165.0/examples/jsm/"
+  }
+}
+</script>
+
+<script type="module">
+import * as THREE from 'three';
+import { EffectComposer }  from 'three/addons/postprocessing/EffectComposer.js';
+import { RenderPass }      from 'three/addons/postprocessing/RenderPass.js';
+import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
+import { ShaderPass }      from 'three/addons/postprocessing/ShaderPass.js';
+
+// ─────────────────────────────────────────
+// RENDERER
+// ─────────────────────────────────────────
+const canvas   = document.getElementById('dental-canvas');
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.toneMapping        = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.15;
+
+const scene  = new THREE.Scene();
+scene.fog    = new THREE.FogExp2(0x030609, 0.022);
+
+const camera = new THREE.PerspectiveCamera(52, window.innerWidth / window.innerHeight, 0.1, 200);
+camera.position.set(0, 0, 10);
+
+// ─────────────────────────────────────────
+// LIGHTING
+// ─────────────────────────────────────────
+scene.add(new THREE.AmbientLight(0x08152a, 1.8));
+
+const rimL = new THREE.DirectionalLight(0x00c8f8, 3.2);
+rimL.position.set(-5, 3, -4);
+scene.add(rimL);
+
+const rimR = new THREE.DirectionalLight(0x3838cc, 1.8);
+rimR.position.set(5, -2, -3);
+scene.add(rimR);
+
+const topL = new THREE.PointLight(0x00f0d4, 4.5, 32);
+topL.position.set(0, 8, 5);
+scene.add(topL);
+
+const scanLight = new THREE.PointLight(0x00c8f8, 0, 22);
+scanLight.position.set(0, 2, 3);
+scene.add(scanLight);
+
+// ─────────────────────────────────────────
+// SHARED MATERIALS
+// ─────────────────────────────────────────
+const toothMat = new THREE.MeshPhysicalMaterial({
+  color: 0xd5e8f6, metalness: 0.0, roughness: 0.14,
+  transmission: 0.32, thickness: 1.3,
+  transparent: true, opacity: 0.90,
+  side: THREE.DoubleSide, envMapIntensity: 1.3,
+});
+const jawMat = new THREE.MeshPhysicalMaterial({
+  color: 0xb4d0e6, metalness: 0.05, roughness: 0.32,
+  transmission: 0.22, thickness: 1.9,
+  transparent: true, opacity: 0.70,
+  side: THREE.DoubleSide,
+});
+const cariesMat = new THREE.MeshStandardMaterial({
+  color: 0xffb347, emissive: 0xff8800, emissiveIntensity: 0,
+  roughness: 0.58, metalness: 0.1,
+  transparent: true, opacity: 0.88,
+});
+const lesionMat = new THREE.MeshStandardMaterial({
+  color: 0xff3c6e, emissive: 0xff1a5e, emissiveIntensity: 0,
+  roughness: 0.38, metalness: 0.2,
+  transparent: true, opacity: 0.92,
+});
+const rootMat = new THREE.MeshPhysicalMaterial({
+  color: 0xa4c4dc, metalness: 0.0, roughness: 0.42,
+  transparent: true, opacity: 0.58,
+});
+
+// ─────────────────────────────────────────
+// JAW ARCH
+// ─────────────────────────────────────────
+const jawGroup = new THREE.Group();
+scene.add(jawGroup);
+
+const jawArchGeo = new THREE.TorusGeometry(2.6, 0.28, 12, 64, Math.PI);
+const jawArch    = new THREE.Mesh(jawArchGeo, jawMat);
+jawArch.rotation.z = Math.PI;
+jawArch.position.y = -1.2;
+jawGroup.add(jawArch);
+
+// ─────────────────────────────────────────
+// TEETH FACTORY
+// ─────────────────────────────────────────
+function makeTooth(w, h, d, cx, cy, hasCaries = false) {
+  const g = new THREE.Group();
+
+  const crownGeo = new THREE.BoxGeometry(w, h * 0.65, d);
+  crownGeo.translate(0, h * 0.25, 0);
+  g.add(new THREE.Mesh(crownGeo, toothMat.clone()));
+
+  const rootGeo = new THREE.CylinderGeometry(w * 0.28, w * 0.10, h * 0.50, 8);
+  rootGeo.translate(0, -h * 0.38, 0);
+  g.add(new THREE.Mesh(rootGeo, rootMat.clone()));
+
+  if (hasCaries) {
+    const cGeo  = new THREE.SphereGeometry(w * 0.19, 10, 10);
+    const cMesh = new THREE.Mesh(cGeo, cariesMat.clone());
+    cMesh.position.set(0, h * 0.38, d * 0.36);
+    cMesh.userData.isCaries = true;
+    g.add(cMesh);
+  }
+
+  g.position.set(cx, cy, 0);
+  return g;
+}
+
+const R = 2.45;
+const toothDefs = [
+  [  0, 0.55, 1.10, 0.44, false],
+  [ 18, 0.52, 1.04, 0.41, false],
+  [ 36, 0.50, 1.00, 0.42, true ],  // ← CARIES
+  [ 54, 0.60, 1.10, 0.50, false],
+  [ 72, 0.62, 1.14, 0.52, false],
+  [ 90, 0.70, 1.20, 0.55, false],
+  [-18, 0.52, 1.04, 0.41, false],
+  [-36, 0.50, 1.00, 0.42, false],
+  [-54, 0.60, 1.10, 0.50, false],
+  [-72, 0.62, 1.14, 0.52, true ],  // ← CARIES
+  [-90, 0.70, 1.20, 0.55, false],
+];
+
+toothDefs.forEach(([angleDeg, w, h, d, hasCaries]) => {
+  const rad   = THREE.MathUtils.degToRad(angleDeg);
+  const tooth = makeTooth(w, h, d, Math.sin(rad) * R, -1.2 + Math.cos(rad) * 0.2, hasCaries);
+  tooth.rotation.z = -rad * 0.4;
+  jawGroup.add(tooth);
+});
+
+// ─────────────────────────────────────────
+// PERIAPICAL LESION
+// ─────────────────────────────────────────
+const lesionMesh = new THREE.Mesh(
+  new THREE.SphereGeometry(0.32, 16, 16),
+  lesionMat.clone()
+);
+lesionMesh.position.set(-2.35, -1.95, 0.05);
+lesionMesh.userData.isLesion = true;
+jawGroup.add(lesionMesh);
+
+const haloMat  = new THREE.MeshBasicMaterial({ color: 0xff3c6e, transparent: true, opacity: 0 });
+const haloMesh = new THREE.Mesh(new THREE.TorusGeometry(0.46, 0.026, 8, 52), haloMat);
+haloMesh.position.copy(lesionMesh.position);
+jawGroup.add(haloMesh);
+
+// second halo ring (outer, slower)
+const haloMat2  = new THREE.MeshBasicMaterial({ color: 0xff3c6e, transparent: true, opacity: 0 });
+const haloMesh2 = new THREE.Mesh(new THREE.TorusGeometry(0.70, 0.018, 8, 52), haloMat2);
+haloMesh2.position.copy(lesionMesh.position);
+jawGroup.add(haloMesh2);
+
+// ─────────────────────────────────────────
+// SCAN LASER + BEAM
+// ─────────────────────────────────────────
+const scanMat = new THREE.MeshBasicMaterial({
+  color: 0x00c8f8, transparent: true, opacity: 0,
+  side: THREE.DoubleSide, blending: THREE.AdditiveBlending, depthWrite: false,
+});
+const scanPlane = new THREE.Mesh(new THREE.PlaneGeometry(8, 0.055), scanMat);
+scanPlane.position.set(0, -4, 0.22);
+scene.add(scanPlane);
+
+const beamMat = new THREE.MeshBasicMaterial({
+  color: 0x00c8f8, transparent: true, opacity: 0,
+  side: THREE.DoubleSide, blending: THREE.AdditiveBlending, depthWrite: false,
+});
+const beamPlane = new THREE.Mesh(new THREE.PlaneGeometry(8, 0.60), beamMat);
+beamPlane.position.set(0, -4, 0.14);
+scene.add(beamPlane);
+
+// ─────────────────────────────────────────
+// SCAN GRID
+// ─────────────────────────────────────────
+function makeGrid() {
+  const mat = new THREE.LineBasicMaterial({
+    color: 0x00c8f8, transparent: true, opacity: 0, blending: THREE.AdditiveBlending,
+  });
+  const pts = [];
+  const W = 8, D = 5, sX = 0.6, sZ = 0.6;
+  for (let x = -W/2; x <= W/2; x += sX) {
+    pts.push(new THREE.Vector3(x, 0, -D/2), new THREE.Vector3(x, 0, D/2));
+  }
+  for (let z = -D/2; z <= D/2; z += sZ) {
+    pts.push(new THREE.Vector3(-W/2, 0, z), new THREE.Vector3(W/2, 0, z));
+  }
+  const grid = new THREE.LineSegments(
+    new THREE.BufferGeometry().setFromPoints(pts), mat
+  );
+  grid.position.set(0, -1.2, 0);
+  return { grid, mat };
+}
+const { grid: scanGrid, mat: gridMat } = makeGrid();
+scene.add(scanGrid);
+
+// ─────────────────────────────────────────
+// BOUNDING BOXES
+// ─────────────────────────────────────────
+function makeHoloBBox(w, h, d, color) {
+  const mat = new THREE.LineBasicMaterial({
+    color, transparent: true, opacity: 0, blending: THREE.AdditiveBlending,
+  });
+  return { mesh: new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.BoxGeometry(w,h,d)), mat), mat };
+}
+
+const { mesh: bboxC1, mat: bboxC1Mat } = makeHoloBBox(0.56, 0.74, 0.50, 0xffb347);
+bboxC1.position.set(0.92, -0.60, 0);
+jawGroup.add(bboxC1);
+
+const { mesh: bboxC2, mat: bboxC2Mat } = makeHoloBBox(0.56, 0.74, 0.50, 0xffb347);
+bboxC2.position.set(-1.72, -0.60, 0);
+jawGroup.add(bboxC2);
+
+const { mesh: bboxL, mat: bboxLMat } = makeHoloBBox(0.78, 0.78, 0.78, 0xff3c6e);
+bboxL.position.copy(lesionMesh.position);
+jawGroup.add(bboxL);
+
+// ─────────────────────────────────────────
+// LABEL SPRITES
+// ─────────────────────────────────────────
+function makeLabel(text, color) {
+  const c = document.createElement('canvas');
+  c.width = 280; c.height = 68;
+  const ctx = c.getContext('2d');
+  ctx.clearRect(0, 0, 280, 68);
+  ctx.fillStyle = color;
+  ctx.font = '600 21px Inter, sans-serif';
+  ctx.fillText(text, 6, 42);
+  const mat = new THREE.SpriteMaterial({
+    map: new THREE.CanvasTexture(c),
+    transparent: true, opacity: 0, blending: THREE.AdditiveBlending,
+  });
+  const spr = new THREE.Sprite(mat);
+  spr.scale.set(1.5, 0.37, 1);
+  return { spr, mat };
+}
+
+const { spr: lblC1, mat: lblC1Mat } = makeLabel('CARIES  87%', '#ffb347');
+lblC1.position.set(0.92, -0.06, 0);
+jawGroup.add(lblC1);
+
+const { spr: lblC2, mat: lblC2Mat } = makeLabel('CARIES  74%', '#ffb347');
+lblC2.position.set(-1.72, -0.06, 0);
+jawGroup.add(lblC2);
+
+const { spr: lblL, mat: lblLMat } = makeLabel('LESION  92%', '#ff3c6e');
+lblL.position.set(-2.35, -1.38, 0);
+jawGroup.add(lblL);
+
+// ─────────────────────────────────────────
+// POST-PROCESSING
+// ─────────────────────────────────────────
+const composer = new EffectComposer(renderer);
+composer.addPass(new RenderPass(scene, camera));
+composer.addPass(new UnrealBloomPass(
+  new THREE.Vector2(window.innerWidth, window.innerHeight),
+  1.0, 0.50, 0.12  // strength, radius, threshold
+));
+
+const vigPass = new ShaderPass({
+  uniforms: { tDiffuse: { value: null }, darkness: { value: 0.50 } },
+  vertexShader:   `varying vec2 v; void main(){ v=uv; gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.); }`,
+  fragmentShader: `
+    uniform sampler2D tDiffuse; uniform float darkness; varying vec2 v;
+    void main(){
+      vec4 col = texture2D(tDiffuse, v);
+      vec2 uv  = (v - .5) * 2.;
+      col.rgb *= 1. - dot(uv,uv) * darkness;
+      gl_FragColor = col;
+    }
+  `
+});
+composer.addPass(vigPass);
+
+// ─────────────────────────────────────────
+// PARTICLE CANVAS
+// ─────────────────────────────────────────
+const pCanvas = document.getElementById('particle-canvas');
+const pCtx    = pCanvas.getContext('2d');
+pCanvas.width  = window.innerWidth;
+pCanvas.height = window.innerHeight;
+
+const PARTICLES = Array.from({ length: 90 }, () => ({
+  x: Math.random() * window.innerWidth,
+  y: Math.random() * window.innerHeight,
+  r: Math.random() * 1.4 + 0.3,
+  dx: (Math.random() - 0.5) * 0.15,
+  dy: (Math.random() - 0.5) * 0.15,
+  a: Math.random() * 0.35 + 0.08,
+}));
+
+function drawParticles() {
+  pCtx.clearRect(0, 0, pCanvas.width, pCanvas.height);
+  PARTICLES.forEach(p => {
+    p.x += p.dx; p.y += p.dy;
+    if (p.x < 0) p.x = pCanvas.width;
+    if (p.x > pCanvas.width) p.x = 0;
+    if (p.y < 0) p.y = pCanvas.height;
+    if (p.y > pCanvas.height) p.y = 0;
+    pCtx.beginPath();
+    pCtx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+    pCtx.fillStyle = `rgba(0,200,248,${p.a})`;
+    pCtx.fill();
+  });
+}
+
+// ─────────────────────────────────────────
+// STATE MACHINE
+// ─────────────────────────────────────────
+let phase = 0, phaseTime = 0;
+const PHASE_DUR = [2.0, 2.8, 0.6, 0.7, 1.0, 1.2, 3.5, 1.0];
+const STATUS_LABELS = [
+  'INITIALIZING…', 'SCANNING DENTITION…', 'CARIES DETECTED',
+  'LESION DETECTED', 'BOUNDING BOXES SET',
+  'COMPUTING CONFIDENCE…', 'ANALYSIS COMPLETE ✓', 'RESETTING…',
+];
+
+let mouseX = 0, mouseY = 0;
+window.addEventListener('mousemove', e => {
+  mouseX = (e.clientX / window.innerWidth  - 0.5) * 2;
+  mouseY = (e.clientY / window.innerHeight - 0.5) * 2;
+});
+
+const cariesBar  = document.getElementById('cariesBar');
+const lesionBar  = document.getElementById('lesionBar');
+const healthyBar = document.getElementById('healthyBar');
+const cariesVal  = document.getElementById('cariesVal');
+const lesionVal  = document.getElementById('lesionVal');
+const healthyVal = document.getElementById('healthyVal');
+const scanStatus = document.getElementById('scanStatusText');
+
+function lerp(a, b, t)   { return a + (b - a) * t; }
+function clamp01(x)      { return Math.max(0, Math.min(1, x)); }
+function ease(t)         { const c = clamp01(t); return c * c * (3 - 2 * c); }
+
+function resetScene() {
+  scanMat.opacity = beamMat.opacity = gridMat.opacity = 0;
+  scanPlane.position.y = beamPlane.position.y = -4;
+  haloMat.opacity = haloMat2.opacity = 0;
+  bboxC1Mat.opacity = bboxC2Mat.opacity = bboxLMat.opacity = 0;
+  lblC1Mat.opacity  = lblC2Mat.opacity  = lblLMat.opacity  = 0;
+  jawGroup.traverse(o => {
+    if (o.isMesh && o.userData.isCaries) o.material.emissiveIntensity = 0;
+    if (o.isMesh && o.userData.isLesion) o.material.emissiveIntensity = 0;
+  });
+  cariesBar.style.width = lesionBar.style.width = healthyBar.style.width = '0%';
+  cariesVal.textContent = lesionVal.textContent = healthyVal.textContent = '0%';
+  scanLight.intensity   = 0;
+  phase = 0; phaseTime = 0;
+}
+
+// ─────────────────────────────────────────
+// STAT COUNTERS
+// ─────────────────────────────────────────
+let countersStarted = false;
+function startCounters() {
+  if (countersStarted) return;
+  countersStarted = true;
+  animCtr('acc-counter',   94,   '%',  2400);
+  animCtr('scans-counter', 5200, '+',  2800);
+}
+function animCtr(id, target, suf, ms) {
+  const el = document.getElementById(id);
+  const t0 = Date.now();
+  const tick = () => {
+    const p   = Math.min(1, (Date.now() - t0) / ms);
+    const val = Math.round((1 - Math.pow(1 - p, 3)) * target);
+    el.textContent = val + suf;
+    if (p < 1) requestAnimationFrame(tick);
+  };
+  tick();
+}
+
+// ─────────────────────────────────────────
+// MAIN LOOP
+// ─────────────────────────────────────────
+const clock = new THREE.Clock();
+
+function animate() {
+  requestAnimationFrame(animate);
+  const delta = clock.getDelta();
+  const time  = clock.getElapsedTime();
+
+  drawParticles();
+
+  phaseTime += delta;
+  if (phaseTime >= PHASE_DUR[phase]) {
+    phaseTime = 0;
+    phase = (phase + 1) % PHASE_DUR.length;
+    if (phase === 0) resetScene();
+    scanStatus.textContent = STATUS_LABELS[phase] || 'SCANNING…';
+  }
+
+  const pt  = clamp01(phaseTime / PHASE_DUR[phase]);
+  const ept = ease(pt);
+
+  // ── jaw parallax + gentle rotation
+  jawGroup.rotation.y = Math.sin(time * 0.17) * 0.27 + mouseX * 0.17;
+  jawGroup.rotation.x = Math.sin(time * 0.11) * 0.055 - mouseY * 0.09;
+
+  // ── camera depth parallax
+  camera.position.z = 10 + Math.sin(time * 0.14) * 0.55;
+  camera.position.y = Math.sin(time * 0.09) * 0.22;
+  camera.lookAt(0, -0.5, 0);
+
+  topL.intensity = 4.0 + Math.sin(time * 0.75) * 0.55;
+
+  // PHASE 0 — idle
+  if (phase === 0) rimL.intensity = 3.0 + Math.sin(time * 1.1) * 0.55;
+
+  // PHASE 1 — scan sweep
+  if (phase === 1) {
+    const scanY = lerp(-2.5, 1.6, ept);
+    scanPlane.position.y = beamPlane.position.y = scanY;
+    scanMat.opacity  = ept < 0.05 ? ept / 0.05 : ept > 0.95 ? (1 - ept) / 0.05 : 0.88;
+    beamMat.opacity  = scanMat.opacity * 0.22;
+    gridMat.opacity  = ept * 0.28;
+    scanLight.intensity = ept * 5.5;
+    scanLight.position.y = scanY;
+    rimL.intensity = 3.0 + ept * 2.2;
+  }
+
+  // PHASE 2 — caries glow
+  if (phase === 2) {
+    const glow = ept * 2.8;
+    jawGroup.traverse(o => { if (o.isMesh && o.userData.isCaries) o.material.emissiveIntensity = glow; });
+    gridMat.opacity     = 0.28 - ept * 0.12;
+    scanLight.intensity = lerp(5.5, 2.2, ept);
+  }
+
+  // PHASE 3 — lesion glow + dual halo
+  if (phase === 3) {
+    lesionMesh.material.emissiveIntensity = ept * 3.8;
+    haloMat.opacity  = ept * 0.75;
+    haloMat2.opacity = ept * 0.35;
+  }
+
+  // persistent halo animation
+  if (phase >= 3) {
+    haloMesh.rotation.z  = time * 1.6;
+    haloMesh2.rotation.z = -time * 0.9;
+    const pulse = 1 + Math.sin(time * 4.2) * 0.06;
+    haloMesh.scale.setScalar(pulse);
+    haloMesh2.scale.setScalar(1 + Math.sin(time * 2.8) * 0.04);
+  }
+
+  // PHASE 4 — bboxes
+  if (phase === 4) {
+    bboxC1Mat.opacity = bboxC2Mat.opacity = ept * 0.96;
+    bboxLMat.opacity  = ept * 0.92;
+    lblC1Mat.opacity  = lblC2Mat.opacity  = ept * 0.92;
+    lblLMat.opacity   = ept * 0.92;
+  }
+
+  if (phase >= 4) {
+    bboxC1Mat.opacity = bboxC2Mat.opacity = 0.96;
+    lblC1Mat.opacity  = lblC2Mat.opacity  = 0.92;
+    lblLMat.opacity   = 0.92;
+    bboxLMat.opacity  = 0.72 + Math.sin(time * 3.2) * 0.18; // pulse lesion bbox
+  }
+
+  // PHASE 5 — HUD fill
+  if (phase === 5) {
+    const c = Math.round(ept * 87), l = Math.round(ept * 92), h = Math.round(ept * 41);
+    cariesBar.style.width = c + '%'; lesionBar.style.width = l + '%'; healthyBar.style.width = h + '%';
+    cariesVal.textContent = c + '%'; lesionVal.textContent = l + '%'; healthyVal.textContent = h + '%';
+  }
+
+  // PHASE 6 — hold & breathe
+  if (phase === 6) {
+    const pulse = Math.sin(time * 2.6) * 0.18;
+    jawGroup.traverse(o => { if (o.isMesh && o.userData.isCaries) o.material.emissiveIntensity = 2.8 + pulse; });
+    lesionMesh.material.emissiveIntensity = 3.8 + Math.sin(time * 3.1) * 0.28;
+  }
+
+  // PHASE 7 — fade out & reset
+  if (phase === 7) {
+    const f = 1 - ept;
+    bboxC1Mat.opacity = bboxC2Mat.opacity = 0.96 * f;
+    bboxLMat.opacity  = 0.92 * f;
+    lblC1Mat.opacity  = lblC2Mat.opacity  = lblLMat.opacity = 0.92 * f;
+    haloMat.opacity   = 0.75 * f; haloMat2.opacity = 0.35 * f;
+    scanLight.intensity = 2.2 * f;
+    jawGroup.traverse(o => {
+      if (o.isMesh && o.userData.isCaries) o.material.emissiveIntensity = 2.8 * f;
+      if (o.isMesh && o.userData.isLesion) o.material.emissiveIntensity = 3.8 * f;
+    });
+  }
+
+  composer.render();
+}
+
+// ─────────────────────────────────────────
+// RESIZE
+// ─────────────────────────────────────────
+window.addEventListener('resize', () => {
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  composer.setSize(window.innerWidth, window.innerHeight);
+  pCanvas.width  = window.innerWidth;
+  pCanvas.height = window.innerHeight;
+});
+
+// ── START
+setTimeout(() => {
+  scanStatus.textContent = STATUS_LABELS[0];
+  startCounters();
+  animate();
+}, 200);
+
+</script>
+</body>
+</html>
