@@ -216,3 +216,12 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# ── DentOmni model weights (too large for GitHub without LFS) ──
+fasterrcnn_resnet50_detectron2_model.pth
+resnet50_weights.pth
+*.pth
+
+# Uploaded X-ray images (runtime, not source)
+backend/uploads/
+uploads/
