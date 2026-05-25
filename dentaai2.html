@@ -3,8 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>DentaAI — Smart Dental Care</title>
+<title>DentOmni — Smart Dental Care</title>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;}
 :root{
@@ -390,9 +391,27 @@ h1 .ac::after{
 .rst-c{background:rgba(74,222,128,.18);color:#4ade80;border:1px solid rgba(74,222,128,.3);}
 .rst-w{background:rgba(251,191,36,.18);color:#fbbf24;border:1px solid rgba(251,191,36,.3);}
 /* annotated image */
-.ann-wrap{margin-top:20px;border-radius:16px;overflow:hidden;border:1px solid rgba(124,92,191,.3);}
-.ann-wrap img{width:100%;display:block;}
-.ann-title{font-family:'Syne',sans-serif;font-size:16px;font-weight:700;color:#fff;margin:24px 0 12px;}
+.ann-wrap{
+  margin:24px auto 0;
+  max-width:550px;
+  border-radius:16px;
+  overflow:hidden;
+  border:1px solid rgba(124,92,191,.3);
+  background:rgba(255,255,255,.03);
+  box-shadow:0 8px 32px rgba(0,0,0,0.25);
+}
+.ann-wrap img{width:100%;height:auto;display:block;}
+.ann-title{
+  font-family:'Syne',sans-serif;
+  font-size:15px;
+  font-weight:700;
+  color:#fff;
+  padding:14px 20px;
+  margin:0;
+  background:rgba(124,92,191,.15);
+  border-bottom:1px solid rgba(124,92,191,.2);
+  text-align:center;
+}
 /* report download btn */
 .btn-report{
   width:100%;padding:15px;margin-top:18px;
@@ -424,7 +443,7 @@ h1 .ac::after{
   <nav>
     <div class="logo">
       <div class="logo-box">🦷</div>
-      <div>DentaAI<small>SMART DENTAL CARE</small></div>
+      <div>DentOmni<small>SMART DENTAL CARE</small></div>
     </div>
     <div class="ai-pill">
       <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
@@ -595,43 +614,12 @@ h1 .ac::after{
       <div class="xray-slider" id="xraySlider">
         <!-- BEFORE (full background) -->
         <div class="xray-img before-img">
-          <svg width="340" height="180" viewBox="0 0 340 180">
-            <rect width="340" height="180" fill="#07061a"/>
-            <g stroke="#7c5cbf" stroke-width="2" fill="#110f28" opacity="0.9">
-              <rect x="36"  y="18" width="26" height="140" rx="13"/>
-              <rect x="78"  y="13" width="28" height="150" rx="14"/>
-              <rect x="124" y="8"  width="32" height="160" rx="16"/>
-              <rect x="178" y="8"  width="32" height="160" rx="16"/>
-              <rect x="228" y="13" width="28" height="150" rx="14"/>
-              <rect x="274" y="18" width="26" height="140" rx="13"/>
-            </g>
-          </svg>
+          <img src="before_panoramic.jpg" style="width:340px; height:180px; display:block; object-fit:cover;" alt="Before AI">
           <div class="slide-lbl"><span class="sdot g"></span>Before</div>
         </div>
         <!-- AFTER (clip reveal) -->
         <div class="xray-img after-img" id="afterImgWrap">
-          <svg width="340" height="180" viewBox="0 0 340 180">
-            <rect width="340" height="180" fill="#0d0828"/>
-            <g stroke="#9b77e0" stroke-width="2" fill="#1a1040" opacity="0.9">
-              <rect x="36"  y="18" width="26" height="140" rx="13"/>
-              <rect x="78"  y="13" width="28" height="150" rx="14"/>
-              <rect x="124" y="8"  width="32" height="160" rx="16"/>
-              <rect x="178" y="8"  width="32" height="160" rx="16"/>
-              <rect x="228" y="13" width="28" height="150" rx="14"/>
-              <rect x="274" y="18" width="26" height="140" rx="13"/>
-            </g>
-            <!-- Caries highlight -->
-            <circle cx="140" cy="78" r="18" fill="rgba(248,113,113,.22)" stroke="#f87171" stroke-width="2" stroke-dasharray="5,3"/>
-            <text x="140" y="56" fill="#f87171" font-size="10" font-family="Arial" font-weight="700" text-anchor="middle">Caries</text>
-            <!-- Lesion highlight -->
-            <circle cx="194" cy="118" r="15" fill="rgba(251,191,36,.18)" stroke="#fbbf24" stroke-width="2" stroke-dasharray="5,3"/>
-            <text x="194" y="98" fill="#fbbf24" font-size="10" font-family="Arial" font-weight="700" text-anchor="middle">Lesion</text>
-            <!-- Scan line -->
-            <line x1="0" y1="90" x2="340" y2="90" stroke="rgba(124,92,191,.6)" stroke-width="1.5">
-              <animate attributeName="y1" values="10;165;10" dur="2.2s" repeatCount="indefinite"/>
-              <animate attributeName="y2" values="10;165;10" dur="2.2s" repeatCount="indefinite"/>
-            </line>
-          </svg>
+          <img src="after_panoramic.jpg" style="width:340px; height:180px; display:block; object-fit:cover;" alt="AI Analysis">
           <div class="ai-lbl"><span class="sdot p"></span>AI Analysis</div>
         </div>
         <!-- DRAG HANDLE -->
@@ -686,7 +674,7 @@ h1 .ac::after{
   <nav>
     <div class="logo">
       <div class="logo-box">🦷</div>
-      <div>DentaAI<small>SMART DENTAL CARE</small></div>
+      <div>DentOmni<small>SMART DENTAL CARE</small></div>
     </div>
     <div class="nav-links">
       <a href="#" onclick="goHome();return false;">Home</a>
@@ -931,6 +919,7 @@ function downloadReport(){
   const d = lastResult;
   const cariesPct = Math.round(d.caries.confidence * 100);
   const lesionPct = Math.round(d.periapical_lesion.confidence * 100);
+  const overallConf = Math.round(Math.max(d.caries.confidence, d.periapical_lesion.confidence) * 100);
   const anyDetected = d.caries.detected || d.periapical_lesion.detected;
   const modelName = selM===1 ? 'Faster R-CNN + ResNet-50-FPN' : 'ResNet-50 Classifier';
   const now = new Date();
@@ -953,52 +942,255 @@ function downloadReport(){
         '• Use fluoride toothpaste and mouthwash for optimal protection.',
       ];
 
-  const boxInfo = selM===1 && d.bounding_boxes?.length > 0
-    ? `\nBounding Boxes Found: ${d.bounding_boxes.length} region(s) flagged on X-ray`
-    : selM===1 ? '\nBounding Boxes: None detected above threshold' : '';
+  // Generate PDF report using jsPDF
+  try {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({
+      orientation: 'portrait',
+      unit: 'mm',
+      format: 'a4'
+    });
 
-  const reportText = [
-    '╔══════════════════════════════════════════════════════╗',
-    '║              DentaAI — Dental Analysis Report        ║',
-    '╚══════════════════════════════════════════════════════╝',
-    '',
-    `Date:        ${dateStr}`,
-    `Time:        ${timeStr}`,
-    `File:        ${lastFileName}`,
-    `Model Used:  ${modelName}`,
-    `Inference:   ${d.inference_time_ms}ms`,
-    '',
-    '──────────────────────────────────────────────────────',
-    '  AI ANALYSIS RESULTS',
-    '──────────────────────────────────────────────────────',
-    `  Caries Probability:           ${cariesPct}%  ${d.caries.detected ? '[⚠ DETECTED]' : '[✓ Not Detected]'}`,
-    `  Periapical Lesion Probability: ${lesionPct}%  ${d.periapical_lesion.detected ? '[⚠ DETECTED]' : '[✓ Not Detected]'}`,
-    `  Overall Confidence:            ${Math.round(Math.max(d.caries.confidence, d.periapical_lesion.confidence)*100)}%`,
-    boxInfo,
-    '',
-    '──────────────────────────────────────────────────────',
-    `  ${anyDetected ? '⚠  CLINICAL RECOMMENDATIONS' : '✓  ROUTINE CARE RECOMMENDATIONS'}`,
-    '──────────────────────────────────────────────────────',
-    ...rec,
-    '',
-    '──────────────────────────────────────────────────────',
-    '  IMPORTANT DISCLAIMER',
-    '──────────────────────────────────────────────────────',
-    'This report is generated by an AI model and is for',
-    'informational purposes only. It does NOT constitute a',
-    'medical diagnosis. Always consult a qualified dentist',
-    'or dental professional for proper diagnosis and treatment.',
-    '',
-    `Generated by DentaAI v1.0 — ${dateStr}`,
-  ].join('\n');
+    // Theme Colors (Modern Clinical Tech Palette)
+    const primaryNavy = [12, 15, 36];
+    const accentTeal = [14, 116, 144];
+    const mutedSlate = [100, 116, 139];
+    const dangerRed = [220, 38, 38];
+    const safeGreen = [13, 148, 136];
+    const warnOrange = [217, 119, 6];
 
-  const blob = new Blob([reportText], {type:'text/plain'});
-  const url  = URL.createObjectURL(blob);
-  const a    = document.createElement('a');
-  a.href = url;
-  a.download = `DentaAI_Report_${now.toISOString().slice(0,10)}.txt`;
-  a.click();
-  URL.revokeObjectURL(url);
+    const setColor = (c) => doc.setTextColor(c[0], c[1], c[2]);
+
+    // Top Teal Accent Band
+    doc.setFillColor(accentTeal[0], accentTeal[1], accentTeal[2]);
+    doc.rect(0, 0, 210, 8, 'F');
+
+    // Title / Clinic Area
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(22);
+    setColor(primaryNavy);
+    doc.text("DentOmni Diagnostics", 20, 24);
+
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(9.5);
+    setColor(mutedSlate);
+    doc.text("Automated Dental Radiograph Assessment & Report", 20, 30);
+
+    // Divider Line
+    doc.setDrawColor(226, 232, 240);
+    doc.line(20, 35, 190, 35);
+
+    // Metadata section (Modern Clinical Patient Card)
+    doc.setFillColor(248, 250, 252);
+    doc.rect(20, 39, 170, 36, 'F');
+    doc.setDrawColor(226, 232, 240);
+    doc.rect(20, 39, 170, 36, 'D');
+
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(9);
+    setColor(primaryNavy);
+    doc.text("Clinical Patient & Scan Record", 25, 45);
+
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(8.5);
+    doc.text(`Patient ID: DO-84920 (AI Pre-Screen)`, 25, 51);
+    doc.text(`Scan Date: ${dateStr}`, 25, 56);
+    doc.text(`Scan Time: ${timeStr}`, 25, 61);
+    
+    // Truncate filename if too long to prevent overlapping
+    let displayFileName = lastFileName;
+    if (displayFileName.length > 32) {
+      displayFileName = displayFileName.substring(0, 16) + "..." + displayFileName.substring(displayFileName.length - 13);
+    }
+    doc.text(`Image File: ${displayFileName}`, 25, 66);
+
+    doc.text(`Referring Lab: DentOmni Diagnostics Suite`, 110, 51);
+    doc.text(`Analysis Model: ${modelName}`, 110, 56);
+    doc.text(`Inference Latency: ${d.inference_time_ms} ms`, 110, 61);
+    doc.text(`Report Status: Final (AI Pre-Screen)`, 110, 66);
+
+    // Diagnostic findings section
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(11);
+    setColor(primaryNavy);
+    doc.text("PRIMARY AI DIAGNOSTIC FINDINGS", 20, 84);
+
+    // Bounding Box / Metrics layout
+    const cardW = 52;
+    const cardH = 32;
+    const cardY = 89;
+
+    // Card 1: Caries
+    const cariesColor = cariesPct >= 60 ? dangerRed : (cariesPct >= 35 ? warnOrange : safeGreen);
+    doc.setFillColor(255, 255, 255);
+    doc.setDrawColor(cariesColor[0], cariesColor[1], cariesColor[2]);
+    doc.rect(20, cardY, cardW, cardH, 'FD');
+
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(8);
+    setColor(mutedSlate);
+    doc.text("Caries Probability", 25, cardY + 7);
+
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(18);
+    doc.setTextColor(cariesColor[0], cariesColor[1], cariesColor[2]);
+    doc.text(`${cariesPct}%`, 25, cardY + 17);
+
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(8);
+    setColor(primaryNavy);
+    doc.text(d.caries.detected ? "Detected" : "Not Detected", 25, cardY + 26);
+
+    // Card 2: Periapical Lesion
+    const lesionColor = lesionPct >= 60 ? dangerRed : (lesionPct >= 35 ? warnOrange : safeGreen);
+    doc.setFillColor(255, 255, 255);
+    doc.setDrawColor(lesionColor[0], lesionColor[1], lesionColor[2]);
+    doc.rect(79, cardY, cardW, cardH, 'FD');
+
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(8);
+    setColor(mutedSlate);
+    doc.text("Periapical Lesion", 84, cardY + 7);
+
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(18);
+    doc.setTextColor(lesionColor[0], lesionColor[1], lesionColor[2]);
+    doc.text(`${lesionPct}%`, 84, cardY + 17);
+
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(8);
+    setColor(primaryNavy);
+    doc.text(d.periapical_lesion.detected ? "Detected" : "Not Detected", 84, cardY + 26);
+
+    // Card 3: Overall Confidence
+    const overallColor = overallConf >= 60 ? dangerRed : (overallConf >= 35 ? warnOrange : safeGreen);
+    doc.setFillColor(255, 255, 255);
+    doc.setDrawColor(overallColor[0], overallColor[1], overallColor[2]);
+    doc.rect(138, cardY, cardW, cardH, 'FD');
+
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(8);
+    setColor(mutedSlate);
+    doc.text("Overall Confidence", 143, cardY + 7);
+
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(18);
+    doc.setTextColor(overallColor[0], overallColor[1], overallColor[2]);
+    doc.text(`${overallConf}%`, 143, cardY + 17);
+
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(8);
+    setColor(primaryNavy);
+    doc.text("AI certainty score", 143, cardY + 26);
+
+    // Bounding Box info (if Faster R-CNN)
+    let nextY = 132;
+    if (selM === 1) {
+      doc.setFillColor(248, 250, 252);
+      doc.setDrawColor(226, 232, 240);
+      doc.rect(20, 126, 170, 13, 'FD');
+      
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(8);
+      setColor(primaryNavy);
+      doc.text(`Localized Bounding Boxes: ${d.bounding_boxes?.length || 0}`, 25, 134);
+      doc.setFont("helvetica", "normal");
+      doc.text(d.bounding_boxes?.length > 0 ? "Pathology regions marked on annotated image." : "No specific lesion regions marked.", 92, 134);
+      nextY = 148;
+    }
+
+    // Clinical Recommendations
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(11);
+    setColor(primaryNavy);
+    doc.text(anyDetected ? "CLINICAL RECOMMENDATIONS & NEXT STEPS" : "ROUTINE CARE RECOMMENDATIONS", 20, nextY);
+
+    const assessmentBg = anyDetected ? [254, 242, 242] : [240, 253, 240];
+    const assessmentBorder = anyDetected ? [252, 165, 165] : [153, 246, 228];
+    const assessmentTxtColor = anyDetected ? [220, 38, 38] : [13, 148, 136];
+
+    doc.setFillColor(assessmentBg[0], assessmentBg[1], assessmentBg[2]);
+    doc.setDrawColor(assessmentBorder[0], assessmentBorder[1], assessmentBorder[2]);
+    doc.rect(20, nextY + 4, 170, 11, 'FD');
+
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(8.5);
+    doc.setTextColor(assessmentTxtColor[0], assessmentTxtColor[1], assessmentTxtColor[2]);
+    doc.text(anyDetected ? "Attention Required: AI has identified signs of dental pathology." : "Clear Scan: No acute pathology detected by the AI model.", 25, nextY + 11);
+
+    // Bullet points
+    let bulletY = nextY + 22;
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(9);
+    setColor(primaryNavy);
+
+    rec.forEach(item => {
+      const cleanText = item.replace(/^•\s*/, '');
+      doc.setFillColor(accentTeal[0], accentTeal[1], accentTeal[2]);
+      doc.circle(24, bulletY - 2.5, 0.8, 'F');
+      
+      const splitLines = doc.splitTextToSize(cleanText, 155);
+      doc.text(splitLines, 28, bulletY - 1.2);
+      bulletY += (splitLines.length * 4.8) + 1.2;
+    });
+
+    // Signature & Verification Area (Doctor sign-off feel)
+    const sigY = 208;
+    doc.setDrawColor(226, 232, 240);
+    doc.line(20, sigY + 12, 80, sigY + 12);
+    doc.line(130, sigY + 12, 190, sigY + 12);
+
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(7.5);
+    setColor(mutedSlate);
+    doc.text("Dr. / Clinical Reviewer Signature", 20, sigY + 16);
+    doc.text("Date of Clinical Review Verification", 130, sigY + 16);
+
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(8);
+    setColor(primaryNavy);
+    doc.text("UNVERIFIED AI DIAGNOSIS", 20, sigY + 8);
+    doc.text("____ / ____ / 2026", 130, sigY + 8);
+
+    // Disclaimer box at the bottom
+    const discY = 238;
+    doc.setFillColor(248, 250, 252);
+    doc.rect(20, discY, 170, 24, 'F');
+    doc.setDrawColor(226, 232, 240);
+    doc.rect(20, discY, 170, 24, 'D');
+
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(7.5);
+    setColor(primaryNavy);
+    doc.text("IMPORTANT CLINICAL NOTICE", 25, discY + 5);
+
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(7.2);
+    setColor(mutedSlate);
+    const discLines = doc.splitTextToSize("This report is generated by a computer vision model and is designed to assist clinical practitioners. It does NOT constitute a final medical diagnosis. Always consult a qualified dentist or clinical specialist for final diagnosis and treatment plan formulation.", 160);
+    doc.text(discLines, 25, discY + 10);
+
+    // Footer
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(7.5);
+    setColor(mutedSlate);
+    doc.text(`Generated by DentOmni Suite v1.0 • Report Date: ${dateStr}`, 20, 274);
+    doc.text("www.dentomni.com", 190, 274, { align: "right" });
+
+    // Save the PDF
+    doc.save(`DentOmni_Report_${now.toISOString().slice(0,10)}.pdf`);
+  } catch (error) {
+    console.error("PDF generation failed, falling back to TXT: ", error);
+    // Fallback to text file in case of error
+    const reportText = `DentOmni Dental Analysis Report\nDate: ${dateStr}\nFile: ${lastFileName}\n\nCaries: ${cariesPct}%\nLesion: ${lesionPct}%\n\nRecommendations:\n${rec.join('\n')}`;
+    const blob = new Blob([reportText], {type:'text/plain'});
+    const url  = URL.createObjectURL(blob);
+    const a    = document.createElement('a');
+    a.href = url;
+    a.download = `DentOmni_Report_${now.toISOString().slice(0,10)}.txt`;
+    a.click();
+    URL.revokeObjectURL(url);
+  }
 }
 
 // ── XRAY toggle ──
