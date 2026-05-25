@@ -40,6 +40,21 @@ app.add_middleware(
 )
 
 # ---------------------------------------------------------------------------
+# Preload models at startup so first request is instant
+# ---------------------------------------------------------------------------
+@app.on_event("startup")
+async def preload_models():
+    """Load both models into GPU memory when the server starts."""
+    for model_name in ("resnet50", "faster_rcnn"):
+        try:
+            logger.info("Preloading model: %s ...", model_name)
+            get_model(model_name).load()
+            logger.info("Preloaded model: %s OK", model_name)
+        except Exception as exc:
+            logger.error("Failed to preload %s: %s", model_name, exc)
+
+
+# ---------------------------------------------------------------------------
 # Allowed image types
 ALLOWED_TYPES = {"image/jpeg", "image/png", "image/webp", "image/bmp", "image/tiff"}
 MAX_FILE_SIZE = 20 * 1024 * 1024   # 20 MB

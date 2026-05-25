@@ -25,6 +25,13 @@ if errorlevel 1 (
   exit /b 1
 )
 
+:: Kill any existing process on port 8000
+echo  [*] Stopping any existing backend on port 8000...
+for /f "tokens=5" %%a in ('netstat -ano ^| findstr ":8000 " ^| findstr "LISTENING" 2^>nul') do (
+  taskkill /PID %%a /F >nul 2>&1
+)
+timeout /t 1 /nobreak >nul
+
 :: Check if uvicorn is installed
 python -m uvicorn --version >nul 2>&1
 if errorlevel 1 (
@@ -34,13 +41,13 @@ if errorlevel 1 (
 )
 
 :: Check model weights
-if not exist "fasterrcnn_resnet50_detectron2_model.pth" (
-  echo  [WARNING] fasterrcnn_resnet50_detectron2_model.pth not found in project root.
+if not exist "FINAL_dental_model.pth" (
+  echo  [WARNING] FINAL_dental_model.pth not found in project root.
   echo            The Faster R-CNN model will fail until the weights are placed here.
   echo.
 )
-if not exist "resnet50_weights.pth" (
-  echo  [WARNING] resnet50_weights.pth not found in project root.
+if not exist "FINAL_resnet50.pth" (
+  echo  [WARNING] FINAL_resnet50.pth not found in project root.
   echo            The ResNet-50 model will fail until the weights are placed here.
   echo.
 )
@@ -50,6 +57,6 @@ echo  [*] API docs available at http://localhost:8000/docs
 echo  [*] Press Ctrl+C to stop the server.
 echo.
 
-python -m uvicorn backend.main:app --reload --host 0.0.0.0 --port 8000
+python -m uvicorn backend.main:app --host 0.0.0.0 --port 8000
 
 pause
