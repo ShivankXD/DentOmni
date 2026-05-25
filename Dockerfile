@@ -15,5 +15,7 @@ RUN pip install --no-cache-dir --upgrade -r /code/requirements.txt
 # Copy all application code
 COPY . /code
 
+ENV PYTHONPATH=/code
+
 # Run the FastAPI server on port 7860 (Hugging Face default)
-CMD ["uvicorn", "backend.main:app", "--host", "0.0.0.0", "--port", "7860"]
+CMD ["python", "-m", "uvicorn", "backend.main:app", "--host", "0.0.0.0", "--port", "7860"]
