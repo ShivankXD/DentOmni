@@ -1224,6 +1224,214 @@ h1 .ac::after{
     border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   }
 }
+
+/* ════════════════════════════
+   TRAINING METRICS LIBRARY PAGE
+   ════════════════════════════ */
+#library {
+  background: linear-gradient(150deg,#0a0915 0%,#130a24 50%,#091024 100%);
+  min-height: 100vh;
+  color: #fff;
+  position: relative;
+  overflow: hidden;
+}
+#library nav {
+  background: rgba(255,255,255,.04);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(255,255,255,.07);
+}
+#library .logo { color: #fff; }
+#library .nav-links a { color: rgba(255,255,255,.65); }
+#library .nav-links a:hover { color: #fff; opacity: 1; }
+
+.lib-body {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 52px 24px 100px;
+}
+.lib-header {
+  text-align: center;
+  margin-bottom: 48px;
+  position: relative;
+  z-index: 10;
+}
+.lib-tag {
+  font-size: 11px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--purple2);
+  font-weight: 600;
+  margin-bottom: 12px;
+  display: inline-block;
+}
+.lib-title {
+  font-family: 'Syne', sans-serif;
+  font-size: 40px;
+  font-weight: 800;
+  color: #fff;
+  margin-bottom: 16px;
+}
+.lib-sub {
+  font-size: 16px;
+  color: rgba(255,255,255,.55);
+  max-width: 650px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+/* Grid Layout */
+.lib-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 24px;
+  margin-bottom: 64px;
+  position: relative;
+  z-index: 10;
+}
+
+/* Card Styling */
+.lib-card {
+  background: rgba(255,255,255,.03);
+  border: 1px solid rgba(255,255,255,.08);
+  border-radius: 20px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+}
+.lib-card:hover {
+  transform: translateY(-5px);
+  background: rgba(255,255,255,.06);
+  border-color: rgba(124,92,191,0.4);
+  box-shadow: 0 12px 30px rgba(124,92,191,0.15);
+}
+.lib-img-wrap {
+  width: 100%;
+  height: 180px;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #000;
+  margin-bottom: 16px;
+  position: relative;
+  border: 1px solid rgba(255,255,255,0.06);
+}
+.lib-img-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s ease;
+}
+.lib-card:hover .lib-img-wrap img {
+  transform: scale(1.05);
+}
+.lib-info {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+.lib-card-title {
+  font-family: 'Syne', sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 8px;
+}
+.lib-card-desc {
+  font-size: 12.5px;
+  color: rgba(255,255,255,.45);
+  line-height: 1.5;
+  margin-bottom: 12px;
+  flex-grow: 1;
+}
+.lib-card-action {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--purple2);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: auto;
+}
+
+/* Lightbox Modal */
+.lightbox-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(9, 6, 22, 0.95);
+  backdrop-filter: blur(12px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+.lightbox-modal.on {
+  opacity: 1;
+  pointer-events: auto;
+}
+.lightbox-content {
+  position: relative;
+  max-width: 90%;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  transform: scale(0.95);
+  transition: transform 0.3s ease;
+}
+.lightbox-modal.on .lightbox-content {
+  transform: scale(1);
+}
+.lightbox-img {
+  max-width: 100%;
+  max-height: 70vh;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.15);
+  box-shadow: 0 20px 50px rgba(0,0,0,0.6);
+  object-fit: contain;
+  background: #05050a;
+}
+.lightbox-details {
+  margin-top: 16px;
+  text-align: center;
+  color: #fff;
+  max-width: 600px;
+}
+.lightbox-title {
+  font-family: 'Syne', sans-serif;
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+.lightbox-desc {
+  font-size: 13.5px;
+  color: rgba(255,255,255,0.6);
+  line-height: 1.5;
+}
+.lightbox-close {
+  position: absolute;
+  top: -45px;
+  right: 0;
+  background: rgba(255,255,255,0.1);
+  border: none;
+  color: #fff;
+  font-size: 24px;
+  cursor: pointer;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+}
+.lightbox-close:hover {
+  background: rgba(255,255,255,0.2);
+}
 </style>
 </head>
 <body>
@@ -1244,6 +1452,7 @@ h1 .ac::after{
       <a href="#" class="active" onclick="goHome();return false;">Home</a>
       <a href="#" onclick="goHowWorks();return false;">How it Works</a>
       <a href="#" onclick="goUpload();return false;">Scan</a>
+      <a href="#" onclick="goLibrary();return false;">Library</a>
     </div>
     <div class="nav-r">
       <div class="moon-btn">🌙</div>
@@ -1261,8 +1470,8 @@ h1 .ac::after{
         <button class="btn-scan" onclick="goUpload()">
           Scan Your Teeth <span class="ic">📷</span>
         </button>
-        <button class="btn-demo">
-          Watch Demo <span class="play-c">▶</span>
+        <button class="btn-demo" onclick="goLibrary()">
+          AI Library <span class="play-c">📚</span>
         </button>
       </div>
     </div>
@@ -1450,11 +1659,17 @@ h1 .ac::after{
   </div>
 
   <!-- STATS -->
-  <div class="stats">
-    <div class="stat"><div class="stat-icon">👥</div><div class="stat-text"><div class="stat-n">10K+</div><div class="stat-l">Analyses Done</div></div></div>
-    <div class="stat"><div class="stat-icon">🎯</div><div class="stat-text"><div class="stat-n">98.7%</div><div class="stat-l">Accuracy Rate</div></div></div>
-    <div class="stat"><div class="stat-icon">⏱️</div><div class="stat-text"><div class="stat-n">2.6s</div><div class="stat-l">Avg. Scan Time</div></div></div>
-    <div class="stat"><div class="stat-icon">🛡️</div><div class="stat-text"><div class="stat-n">100%</div><div class="stat-l">Data Privacy</div></div></div>
+  <div class="stats-container" style="position:relative; width:100%; display:flex; flex-direction:column; align-items:center; justify-content:center; margin-bottom:40px; z-index: 10;">
+    <div class="stats" style="margin-bottom: 8px; padding-bottom: 0;">
+      <div class="stat"><div class="stat-icon">🎯</div><div class="stat-text"><div class="stat-n">87.9%</div><div class="stat-l">Overall Accuracy</div></div></div>
+      <div class="stat"><div class="stat-icon">🦷</div><div class="stat-text"><div class="stat-n">90.2%</div><div class="stat-l">Caries Accuracy</div></div></div>
+      <div class="stat"><div class="stat-icon">📊</div><div class="stat-text"><div class="stat-n">81.2%</div><div class="stat-l">Periapical Accuracy</div></div></div>
+      <div class="stat"><div class="stat-icon">⚠️</div><div class="stat-text"><div class="stat-n">2.3%</div><div class="stat-l">Missed Rate</div></div></div>
+    </div>
+    <div class="benchmark-info" style="align-self: flex-end; margin-right: 52px; font-size: 11px; color: var(--muted); display: inline-flex; align-items: center; gap: 6px; opacity: 0.85; margin-top: 4px;">
+      <span style="display: inline-flex; align-items: center; justify-content: center; width: 14px; height: 14px; border: 1.2px solid var(--muted); border-radius: 50%; font-size: 9px; font-weight: bold; font-family: sans-serif; line-height: 1;">i</span>
+      This benchmark is from FasterRCNN + Resnet50
+    </div>
   </div>
 </div>
 
@@ -1471,6 +1686,7 @@ h1 .ac::after{
       <a href="#" onclick="goHome();return false;">Home</a>
       <a href="#" class="active" onclick="goHowWorks();return false;">How it Works</a>
       <a href="#" onclick="goUpload();return false;">Scan</a>
+      <a href="#" onclick="goLibrary();return false;">Library</a>
     </div>
     <div class="nav-r">
       <button class="btn-gs" onclick="goUpload()">Get Started →</button>
@@ -1555,6 +1771,188 @@ h1 .ac::after{
   </div>
 </div>
 
+<!-- ════ TRAINING METRICS LIBRARY PAGE ════ -->
+<div id="library" class="pg">
+  <nav>
+    <div class="logo" onclick="goHome()">
+      <div class="logo-box">🦷</div>
+      <div>DentOmni<small>SMART DENTAL CARE</small></div>
+    </div>
+    <div class="nav-links">
+      <a href="#" onclick="goHome();return false;">Home</a>
+      <a href="#" onclick="goHowWorks();return false;">How it Works</a>
+      <a href="#" onclick="goUpload();return false;">Scan</a>
+      <a href="#" class="active" onclick="goLibrary();return false;">Library</a>
+    </div>
+    <div class="nav-r">
+      <button class="btn-gs" onclick="goUpload()">Get Started →</button>
+    </div>
+  </nav>
+
+  <div class="lib-body">
+    <div class="lib-header">
+      <span class="lib-tag">Training Output & Metrics Library</span>
+      <h2 class="lib-title">Model Metrics & Architecture</h2>
+      <p class="lib-sub">Explore the deep learning metrics, activation maps, features, predictions, and loss charts obtained during our Faster R-CNN + ResNet-50 training runs.</p>
+    </div>
+
+    <!-- 12 CARDS GRID -->
+    <div class="lib-grid">
+      <!-- Card 1: Confusion Matrix -->
+      <div class="lib-card" onclick="openLightbox('Library/FasterRCNN/confusion_matrix.png', 'Confusion Matrix', 'Classification accuracies across diagnosed classes. Shows true positives, false positives, precision and recall values for caries and periapical lesion labels.')">
+        <div class="lib-img-wrap">
+          <img src="Library/FasterRCNN/confusion_matrix.png" alt="Confusion Matrix">
+        </div>
+        <div class="lib-info">
+          <h3 class="lib-card-title">Confusion Matrix</h3>
+          <p class="lib-card-desc">Detailed classification accuracy metrics across diagnosed classes, illustrating precise true vs. predicted counts.</p>
+          <div class="lib-card-action">Click to enlarge 🔍</div>
+        </div>
+      </div>
+
+      <!-- Card 2: Training Loss Curves -->
+      <div class="lib-card" onclick="openLightbox('Library/FasterRCNN/full_loss_curve_70epochs.png', 'Training & Validation Loss Curves', 'Loss convergence curves monitored over 70 epochs. Compares bounding box regression and classification losses to verify model generalization.')">
+        <div class="lib-img-wrap">
+          <img src="Library/FasterRCNN/full_loss_curve_70epochs.png" alt="Loss Curves">
+        </div>
+        <div class="lib-info">
+          <h3 class="lib-card-title">Training Loss Curves</h3>
+          <p class="lib-card-desc">Monitors convergence of classification and bounding box regression losses across 70 training epochs.</p>
+          <div class="lib-card-action">Click to enlarge 🔍</div>
+        </div>
+      </div>
+
+      <!-- Card 3: Feature Maps -->
+      <div class="lib-card" onclick="openLightbox('Library/FasterRCNN/feature_maps.png', 'ResNet Backbone Feature Maps', 'Visualizations of intermediate layer feature maps. Shows localized feature activations and edges extracted by convolutional layers.')">
+        <div class="lib-img-wrap">
+          <img src="Library/FasterRCNN/feature_maps.png" alt="Feature Maps">
+        </div>
+        <div class="lib-info">
+          <h3 class="lib-card-title">Feature Maps</h3>
+          <p class="lib-card-desc">Visualizes feature maps from intermediate layers, depicting edges and local patterns detected by convolutions.</p>
+          <div class="lib-card-action">Click to enlarge 🔍</div>
+        </div>
+      </div>
+
+      <!-- Card 4: FPN Feature Pyramid -->
+      <div class="lib-card" onclick="openLightbox('Library/FasterRCNN/fpn_feature_pyramid.png', 'FPN Feature Pyramid Networks', 'Feature Pyramid Network scaling maps. Demonstrates multi-scale semantic feature representation for detecting small cavities and larger lesion regions.')">
+        <div class="lib-img-wrap">
+          <img src="Library/FasterRCNN/fpn_feature_pyramid.png" alt="FPN Feature Pyramid">
+        </div>
+        <div class="lib-info">
+          <h3 class="lib-card-title">FPN Feature Pyramid</h3>
+          <p class="lib-card-desc">Shows multi-scale feature pyramids that capture both low-level detail (small caries) and high-level semantics.</p>
+          <div class="lib-card-action">Click to enlarge 🔍</div>
+        </div>
+      </div>
+
+      <!-- Card 5: GradCAM Attention Heatmap -->
+      <div class="lib-card" onclick="openLightbox('Library/FasterRCNN/gradcam_heatmap.png', 'Grad-CAM Attention Heatmap', 'Gradient-weighted Class Activation Mapping. Displays the neural network attention overlays, highlighting pathological focal regions on dental X-rays.')">
+        <div class="lib-img-wrap">
+          <img src="Library/FasterRCNN/gradcam_heatmap.png" alt="GradCAM Attention Heatmap">
+        </div>
+        <div class="lib-info">
+          <h3 class="lib-card-title">Grad-CAM Heatmap</h3>
+          <p class="lib-card-desc">Displays network focus regions on radiographs, validating that the AI targets the correct pathological anatomy.</p>
+          <div class="lib-card-action">Click to enlarge 🔍</div>
+        </div>
+      </div>
+
+      <!-- Card 6: Precision-Recall Curves -->
+      <div class="lib-card" onclick="openLightbox('Library/FasterRCNN/precision_recall_curves.png', 'Precision-Recall Curves', 'PR curves plotted across varied IoU thresholds. Visualizes detection confidence vs recall tradeoffs for both disease labels.')">
+        <div class="lib-img-wrap">
+          <img src="Library/FasterRCNN/precision_recall_curves.png" alt="Precision-Recall Curves">
+        </div>
+        <div class="lib-info">
+          <h3 class="lib-card-title">Precision-Recall Curves</h3>
+          <p class="lib-card-desc">Evaluates precision-recall trade-offs at varying Intersection over Union (IoU) thresholds for disease classes.</p>
+          <div class="lib-card-action">Click to enlarge 🔍</div>
+        </div>
+      </div>
+
+      <!-- Card 7: Confidence Distributions -->
+      <div class="lib-card" onclick="openLightbox('Library/FasterRCNN/confidence_distributions.png', 'Confidence Score Distributions', 'Frequency distribution of AI confidence ratings. Compares the separation profiles between true pathological regions and healthy dental tissue.')">
+        <div class="lib-img-wrap">
+          <img src="Library/FasterRCNN/confidence_distributions.png" alt="Confidence Distributions">
+        </div>
+        <div class="lib-info">
+          <h3 class="lib-card-title">Confidence Distributions</h3>
+          <p class="lib-card-desc">Illustrates the separation in AI confidence scores between healthy tissues and confirmed pathological cases.</p>
+          <div class="lib-card-action">Click to enlarge 🔍</div>
+        </div>
+      </div>
+
+      <!-- Card 8: Accuracy Line Graphs -->
+      <div class="lib-card" onclick="openLightbox('Library/FasterRCNN/line_graphs.png', 'Accuracy Progression Logs', 'Step-by-step training accuracy progression graphs. Highlights overall model accuracy and mAP metrics climbing over time.')">
+        <div class="lib-img-wrap">
+          <img src="Library/FasterRCNN/line_graphs.png" alt="Accuracy Line Graphs">
+        </div>
+        <div class="lib-info">
+          <h3 class="lib-card-title">Accuracy Line Graphs</h3>
+          <p class="lib-card-desc">Tracks step-wise validation accuracy and mean Average Precision (mAP) gains over the training run.</p>
+          <div class="lib-card-action">Click to enlarge 🔍</div>
+        </div>
+      </div>
+
+      <!-- Card 9: Folds Performance Comparison -->
+      <div class="lib-card" onclick="openLightbox('Library/FasterRCNN/bar_graphs.png', 'K-Fold Cross-Validation Performance', 'Performance breakdown across 5 cross-validation folds. Shows high metric stability across diverse split subsets.')">
+        <div class="lib-img-wrap">
+          <img src="Library/FasterRCNN/bar_graphs.png" alt="Folds Performance Comparison">
+        </div>
+        <div class="lib-info">
+          <h3 class="lib-card-title">K-Fold Cross Validation</h3>
+          <p class="lib-card-desc">Compares performance scores across K-Fold splits, proving the model's reliability across diverse data sets.</p>
+          <div class="lib-card-action">Click to enlarge 🔍</div>
+        </div>
+      </div>
+
+      <!-- Card 10: IoU Validation Boxplots -->
+      <div class="lib-card" onclick="openLightbox('Library/FasterRCNN/box_plots.png', 'IoU Bounding Box Coordinates Distribution', 'Distribution of Intersection over Union (IoU) scores. Shows bounding box regression offset variance on test sets.')">
+        <div class="lib-img-wrap">
+          <img src="Library/FasterRCNN/box_plots.png" alt="IoU Validation Boxplots">
+        </div>
+        <div class="lib-info">
+          <h3 class="lib-card-title">IoU Box Plots</h3>
+          <p class="lib-card-desc">Displays statistical distributions of overlap scores, highlighting high bounding box localization precision.</p>
+          <div class="lib-card-action">Click to enlarge 🔍</div>
+        </div>
+      </div>
+
+      <!-- Card 11: Class Balance Metrics -->
+      <div class="lib-card" onclick="openLightbox('Library/FasterRCNN/pie_charts_and_table.png', 'Dataset Class Balance Distribution', 'Pie chart dataset distribution of caries, lesions and normal teeth. Highlights weight balancing applied during training.')">
+        <div class="lib-img-wrap">
+          <img src="Library/FasterRCNN/pie_charts_and_table.png" alt="Class Balance Metrics">
+        </div>
+        <div class="lib-info">
+          <h3 class="lib-card-title">Dataset Class Balance</h3>
+          <p class="lib-card-desc">Details target labeling distributions and loss weight scaling applied to resolve dataset imbalance.</p>
+          <div class="lib-card-action">Click to enlarge 🔍</div>
+        </div>
+      </div>
+
+      <!-- Card 12: Test Predictions -->
+      <div class="lib-card" onclick="openLightbox('Library/FasterRCNN/test_predictions.png', 'Unseen Test Radiograph Predictions', 'Detections on completely unseen panoramic dental X-rays. Depicts bounding box overlays with confidence ratings.')">
+        <div class="lib-img-wrap">
+          <img src="Library/FasterRCNN/test_predictions.png" alt="Test Predictions">
+        </div>
+        <div class="lib-info">
+          <h3 class="lib-card-title">Test Predictions</h3>
+          <p class="lib-card-desc">Displays sample bounding box outputs on fresh, unseen panoramic X-rays during model validation.</p>
+          <div class="lib-card-action">Click to enlarge 🔍</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Benchmarks Bottom Notice -->
+    <div style="display: flex; flex-direction: column; align-items: center; margin-top: 40px; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 30px;">
+      <div class="benchmark-info" style="font-size: 13px; color: rgba(255, 255, 255, 0.5); display: inline-flex; align-items: center; gap: 8px; opacity: 0.9;">
+        <span style="display: inline-flex; align-items: center; justify-content: center; width: 16px; height: 16px; border: 1.5px solid rgba(255,255,255,0.5); border-radius: 50%; font-size: 10px; font-weight: bold; font-family: sans-serif; line-height: 1;">i</span>
+        These benchmarks are from FasterRCNN + Resnet50
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- ════ UPLOAD PAGE ════ -->
 <div id="upload" class="pg">
   <nav>
@@ -1566,6 +1964,7 @@ h1 .ac::after{
       <a href="#" onclick="goHome();return false;">Home</a>
       <a href="#" onclick="goHowWorks();return false;">How it Works</a>
       <a href="#" class="active" onclick="goUpload();return false;">Scan</a>
+      <a href="#" onclick="goLibrary();return false;">Library</a>
     </div>
     <div class="nav-r">
       <button class="btn-gs" onclick="goHome()">← Home</button>
@@ -1736,6 +2135,7 @@ h1 .ac::after{
 function goUpload(){
   document.getElementById('home').classList.remove('on');
   document.getElementById('how-works').classList.remove('on');
+  document.getElementById('library').classList.remove('on');
   document.getElementById('upload').classList.add('on');
   window.scrollTo(0,0);
   initPremiumFeatures();
@@ -1743,15 +2143,40 @@ function goUpload(){
 function goHome(){
   document.getElementById('upload').classList.remove('on');
   document.getElementById('how-works').classList.remove('on');
+  document.getElementById('library').classList.remove('on');
   document.getElementById('home').classList.add('on');
   window.scrollTo(0,0);
 }
 function goHowWorks(){
   document.getElementById('home').classList.remove('on');
   document.getElementById('upload').classList.remove('on');
+  document.getElementById('library').classList.remove('on');
   document.getElementById('how-works').classList.add('on');
   window.scrollTo(0,0);
 }
+function goLibrary(){
+  document.getElementById('home').classList.remove('on');
+  document.getElementById('upload').classList.remove('on');
+  document.getElementById('how-works').classList.remove('on');
+  document.getElementById('library').classList.add('on');
+  window.scrollTo(0,0);
+}
+
+// ── lightbox ──
+function openLightbox(src, title, desc) {
+  document.getElementById('lightboxImg').src = src;
+  document.getElementById('lightboxTitle').textContent = title;
+  document.getElementById('lightboxDesc').textContent = desc;
+  document.getElementById('lightboxModal').classList.add('on');
+}
+function closeLightbox() {
+  document.getElementById('lightboxModal').classList.remove('on');
+}
+window.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+    closeLightbox();
+  }
+});
 
 // ── model ──
 let selM=1;
@@ -3473,6 +3898,18 @@ function downloadConsolidatedBatchReport() {
     <div class="note-modal-btns">
       <button class="btn-note-cancel" onclick="closeToothNoteModal()">Cancel</button>
       <button class="btn-note-save" onclick="saveToothNote()">Save Notes</button>
+    </div>
+  </div>
+</div>
+
+<!-- Lightbox Zoom Modal -->
+<div class="lightbox-modal" id="lightboxModal" onclick="closeLightbox()">
+  <div class="lightbox-content" onclick="event.stopPropagation()">
+    <button class="lightbox-close" onclick="closeLightbox()">✕</button>
+    <img class="lightbox-img" id="lightboxImg" src="" alt="Enlarged visualization">
+    <div class="lightbox-details">
+      <h4 class="lightbox-title" id="lightboxTitle">Visualization</h4>
+      <p class="lightbox-desc" id="lightboxDesc">Details about this metric.</p>
     </div>
   </div>
 </div>
