@@ -25,8 +25,8 @@ if errorlevel 1 (
 )
 
 :: Check if the main HTML file exists
-if not exist "hero-animation.html" (
-  echo  [ERROR] hero-animation.html not found in project root.
+if not exist "dentaai2.html" (
+  echo  [ERROR] dentaai2.html not found in project root.
   pause
   exit /b 1
 )
@@ -37,7 +37,7 @@ echo  [*] Press Ctrl+C to stop the server.
 echo.
 
 :: Open in browser after 1.5s (start is non-blocking, timeout gives server time to bind)
-start "" cmd /c "timeout /t 2 /nobreak >nul && start http://localhost:3000/hero-animation.html"
+start "" cmd /c "timeout /t 2 /nobreak >nul && start http://localhost:3000/dentaai2.html"
 
 :: Serve the current directory
 python -m http.server 3000 --bind 127.0.0.1
