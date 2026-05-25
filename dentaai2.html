@@ -2262,7 +2262,7 @@ uz.addEventListener('drop',e=>{
 });
 
 // ── ANALYSIS (real API) ──
-const API = 'http://localhost:8000';
+const API = window.location.origin.includes('localhost') || window.location.origin.includes('127.0.0.1') ? 'http://localhost:8000' : window.location.origin;
 let lastResult = null;
 let lastFileName = '';
 

@@ -13,7 +13,8 @@ from typing import Literal
 
 from fastapi import FastAPI, File, Form, HTTPException, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, FileResponse
+from fastapi.staticfiles import StaticFiles
 from PIL import Image
 
 from .model_loader import get_model, CLASS_NAMES
@@ -61,14 +62,50 @@ MAX_FILE_SIZE = 20 * 1024 * 1024   # 20 MB
 
 
 # ---------------------------------------------------------------------------
-@app.get("/", tags=["health"])
+ROOT_DIR = Path(__file__).resolve().parent.parent
+
+# Serve index HTML at "/"
+@app.get("/", tags=["frontend"])
 def root():
+    index_path = ROOT_DIR / "dentaai2.html"
+    if index_path.exists():
+        return FileResponse(index_path)
     return {"status": "ok", "service": "DentOmni API", "version": "1.0.0"}
 
 
 @app.get("/health", tags=["health"])
 def health():
     return {"status": "healthy", "classes": CLASS_NAMES}
+
+
+@app.get("/favicon.png", tags=["frontend"])
+def serve_favicon():
+    fav = ROOT_DIR / "favicon.png"
+    if fav.exists():
+        return FileResponse(fav)
+    raise HTTPException(status_code=404)
+
+
+@app.get("/before_panoramic.jpg", tags=["frontend"])
+def serve_before():
+    img = ROOT_DIR / "before_panoramic.jpg"
+    if img.exists():
+        return FileResponse(img)
+    raise HTTPException(status_code=404)
+
+
+@app.get("/after_panoramic.jpg", tags=["frontend"])
+def serve_after():
+    img = ROOT_DIR / "after_panoramic.jpg"
+    if img.exists():
+        return FileResponse(img)
+    raise HTTPException(status_code=404)
+
+
+# Mount the Library directory if it exists to serve training outputs
+lib_dir = ROOT_DIR / "Library"
+if lib_dir.exists():
+    app.mount("/Library", StaticFiles(directory=str(lib_dir)), name="Library")
 
 
 # ---------------------------------------------------------------------------

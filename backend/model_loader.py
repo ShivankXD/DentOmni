@@ -28,6 +28,34 @@ ROOT = Path(__file__).resolve().parent.parent
 FRCNN_WEIGHTS  = ROOT / "FINAL_dental_model.pth"
 RESNET_WEIGHTS = ROOT / "FINAL_resnet50.pth"
 
+FRCNN_URL = os.environ.get(
+    "FRCNN_URL",
+    "https://huggingface.co/ShivankXD/DentOmni/resolve/main/FINAL_dental_model.pth"
+)
+RESNET_URL = os.environ.get(
+    "RESNET_URL",
+    "https://huggingface.co/ShivankXD/DentOmni/resolve/main/FINAL_resnet50.pth"
+)
+
+import urllib.request
+
+def ensure_weights_exist(weights_path: Path, url: str, model_name: str):
+    if weights_path.exists():
+        return
+    logger.info("%s weights not found locally at %s. Attempting to download...", model_name, weights_path)
+    logger.info("Downloading from URL: %s", url)
+    try:
+        weights_path.parent.mkdir(parents=True, exist_ok=True)
+        urllib.request.urlretrieve(url, str(weights_path))
+        logger.info("Successfully downloaded %s weights to %s", model_name, weights_path)
+    except Exception as exc:
+        logger.error("Failed to download weights for %s: %s", model_name, exc)
+        raise FileNotFoundError(
+            f"Model weights for {model_name} could not be loaded or downloaded automatically.\n"
+            f"Error: {exc}\n"
+            f"Please place the weight files locally at: {weights_path}"
+        )
+
 # Class names used during training (order must match training label map)
 CLASS_NAMES = ["caries", "periapical_lesion"]   # index 0, 1
 
@@ -244,11 +272,7 @@ class FasterRCNNModel:
     def load(self):
         if self._model is not None:
             return   # already loaded
-        if not FRCNN_WEIGHTS.exists():
-            raise FileNotFoundError(
-                f"Faster R-CNN weights not found: {FRCNN_WEIGHTS}\n"
-                "Place 'FINAL_dental_model.pth' in the project root."
-            )
+        ensure_weights_exist(FRCNN_WEIGHTS, FRCNN_URL, "Faster R-CNN")
 
         import torchvision.models.detection as tvd
         from torchvision.models.detection.faster_rcnn import FastRCNNPredictor
@@ -654,11 +678,7 @@ class ResNet50Classifier:
     def load(self):
         if self._model is not None:
             return   # already loaded
-        if not RESNET_WEIGHTS.exists():
-            raise FileNotFoundError(
-                f"ResNet-50 weights not found: {RESNET_WEIGHTS}\n"
-                "Place 'FINAL_resnet50.pth' in the project root."
-            )
+        ensure_weights_exist(RESNET_WEIGHTS, RESNET_URL, "ResNet-50")
 
         ckpt = torch.load(str(RESNET_WEIGHTS), map_location=self._device,
                           weights_only=False)
