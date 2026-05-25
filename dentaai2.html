@@ -56,7 +56,7 @@ nav{
   display:flex;align-items:center;justify-content:space-between;
   padding:18px 52px;
 }
-.logo{display:flex;align-items:center;gap:10px;font-family:'Syne',sans-serif;font-weight:700;font-size:17px;color:var(--navy);}
+.logo{display:flex;align-items:center;gap:10px;font-family:'Syne',sans-serif;font-weight:700;font-size:17px;color:var(--navy);cursor:pointer;}
 .logo-box{
   width:40px;height:40px;border-radius:10px;border:1.5px solid var(--purple);
   background:rgba(124,92,191,.1);display:flex;align-items:center;justify-content:center;font-size:19px;
@@ -644,6 +644,586 @@ h1 .ac::after{
 .gauge-pct.warn{color:#fbbf24;}
 .gauge-pct.safe{color:#4ade80;}
 .gauge-sub{font-size:10px;color:rgba(255,255,255,.4);margin-top:4px;}
+
+/* ════ CLINIC-READY DIAGNOSTIC EXTENSIONS ════ */
+.up-container {
+  display: flex;
+  min-height: calc(100vh - 80px);
+  width: 100%;
+}
+.up-sidebar {
+  width: 240px;
+  background: rgba(20, 18, 38, 0.45);
+  backdrop-filter: blur(20px);
+  border-right: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  flex-shrink: 0;
+}
+.up-workspace {
+  flex: 1;
+  padding: 40px 24px 80px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.view-panel {
+  width: 100%;
+}
+
+/* History Sidebar */
+.sidebar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.sidebar-header h3 {
+  font-family: 'Syne', sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  color: #fff;
+}
+.btn-clear-history {
+  background: none;
+  border: 1px solid rgba(248, 113, 113, 0.4);
+  color: #f87171;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 11px;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: 'DM Sans', sans-serif;
+}
+.btn-clear-history:hover {
+  background: rgba(248, 113, 113, 0.1);
+  border-color: #f87171;
+}
+.sidebar-search {
+  width: 100%;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  padding: 10px 14px;
+  border-radius: 10px;
+  color: #fff;
+  font-size: 13px;
+  font-family: 'DM Sans', sans-serif;
+}
+.sidebar-search:focus {
+  border-color: var(--neon);
+  outline: none;
+  background: rgba(255, 255, 255, 0.08);
+}
+.sidebar-list {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 10px;
+  max-height: calc(100vh - 240px);
+}
+.sidebar-list::-webkit-scrollbar {
+  width: 4px;
+}
+.sidebar-list::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 2px;
+}
+.history-item {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 12px;
+  padding: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+  position: relative;
+}
+.history-item:hover {
+  background: rgba(255, 255, 255, 0.07);
+  border-color: rgba(124, 92, 191, 0.4);
+}
+.history-item.active {
+  background: rgba(124, 92, 191, 0.15);
+  border-color: var(--purple);
+}
+.history-item-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+.history-item-title {
+  color: #fff;
+  font-size: 12.5px;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 110px;
+}
+.history-item-date {
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.4);
+}
+.history-item-meta {
+  display: flex;
+  gap: 6px;
+  font-size: 11px;
+}
+.history-item-badge {
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 9px;
+  font-weight: bold;
+}
+.history-item-badge.caries {
+  background: rgba(248, 113, 113, 0.15);
+  color: #f87171;
+}
+.history-item-badge.lesion {
+  background: rgba(96, 165, 250, 0.15);
+  color: #60a5fa;
+}
+.history-item-delete {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  color: rgba(255, 255, 255, 0.3);
+  font-size: 13px;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+.history-item:hover .history-item-delete {
+  opacity: 1;
+}
+.history-item-delete:hover {
+  color: #f87171;
+}
+.history-item-actions {
+  margin-top: 10px;
+  display: flex;
+  gap: 8px;
+}
+.btn-comp-action {
+  flex: 1;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 10px;
+  padding: 5px 6px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: 'DM Sans', sans-serif;
+}
+.btn-comp-action:hover {
+  background: var(--purple);
+  border-color: var(--purple);
+  color: #fff;
+}
+.btn-comp-action.selected {
+  background: var(--neon2);
+  border-color: var(--neon2);
+  color: #fff;
+  font-weight: bold;
+}
+
+/* Mode Switcher Tabs */
+.mode-tab:hover {
+  color: #fff !important;
+}
+.mode-tab.active {
+  background: var(--purple) !important;
+  color: #fff !important;
+  box-shadow: 0 4px 12px rgba(124, 92, 191, 0.3);
+}
+
+/* Batch Queue */
+.batch-queue-wrap {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 18px;
+  padding: 20px;
+  width: 100%;
+}
+.batch-queue-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+.batch-queue-header h4 {
+  font-family: 'Syne', sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  color: #fff;
+}
+.btn-clear-queue {
+  background: none;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 11px;
+  padding: 4px 8px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+.btn-clear-queue:hover {
+  border-color: #f87171;
+  color: #f87171;
+}
+.batch-progress-bar-wrap {
+  width: 100%;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 3px;
+  margin-bottom: 16px;
+  overflow: hidden;
+}
+.batch-progress-bar {
+  height: 100%;
+  background: linear-gradient(90deg, var(--purple), var(--neon2));
+  width: 0%;
+  transition: width 0.3s ease;
+}
+.batch-queue-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 150px;
+  overflow-y: auto;
+}
+.batch-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 10px;
+  padding: 8px 12px;
+  font-size: 12.5px;
+}
+.batch-item-name {
+  color: #fff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 240px;
+}
+.batch-item-status {
+  font-size: 11px;
+  font-weight: 600;
+}
+.batch-item-status.pending { color: rgba(255, 255, 255, 0.4); }
+.batch-item-status.analyzing { color: var(--neon); }
+.batch-item-status.complete { color: #4ade80; }
+.batch-item-status.failed { color: #f87171; }
+
+/* Interactive Bounding Box Highlight Overlays */
+.highlight-box {
+  position: absolute;
+  border: 2px dashed #f87171;
+  box-shadow: 0 0 8px rgba(248, 113, 113, 0.6);
+  border-radius: 4px;
+  transition: all 0.2s ease-in-out;
+  cursor: pointer;
+  z-index: 10;
+}
+.highlight-box.active {
+  border-style: solid;
+  border-color: #ef4444;
+  background-color: rgba(239, 68, 68, 0.22);
+  box-shadow: 0 0 16px #ef4444, inset 0 0 8px #ef4444;
+  animation: pulseHighlight 1s infinite alternate;
+}
+@keyframes pulseHighlight {
+  0% { transform: scale(1); }
+  100% { transform: scale(1.05); }
+}
+
+/* Odontogram (Teeth Map) styling */
+.odontogram-wrap {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 18px;
+  padding: 20px;
+  margin-top: 24px;
+  width: 100%;
+}
+.odontogram-title {
+  font-family: 'Syne', sans-serif;
+  font-size: 14.5px;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 4px;
+}
+.odontogram-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 15px;
+}
+.odontogram-row {
+  display: grid;
+  grid-template-columns: repeat(16, 1fr);
+  gap: 6px;
+}
+.tooth-cell {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  height: 48px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  position: relative;
+  transition: all 0.2s;
+  color: #fff;
+  user-select: none;
+}
+.tooth-cell:hover {
+  background: rgba(124, 92, 191, 0.22);
+  border-color: var(--neon);
+}
+.tooth-cell.flagged {
+  border-color: #f87171;
+  background: rgba(248, 113, 113, 0.12);
+  box-shadow: 0 0 8px rgba(248, 113, 113, 0.25);
+}
+.tooth-cell.flagged .tooth-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #f87171;
+  position: absolute;
+  bottom: 6px;
+  animation: pulseDot 1s infinite alternate;
+}
+@keyframes pulseDot {
+  0% { transform: scale(0.8); opacity: 0.5; }
+  100% { transform: scale(1.3); opacity: 1; }
+}
+.tooth-num {
+  font-size: 11px;
+  font-weight: 700;
+}
+.tooth-cell.tooth-has-notes::after {
+  content: '📝';
+  font-size: 8px;
+  position: absolute;
+  top: 4px;
+  right: 4px;
+}
+
+/* Notes Modal */
+.note-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(9, 6, 22, 0.8);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s;
+}
+.note-modal.on {
+  opacity: 1;
+  pointer-events: auto;
+}
+.note-modal-content {
+  background: #141226;
+  border: 1px solid rgba(124, 92, 191, 0.4);
+  border-radius: 20px;
+  width: 90%;
+  max-width: 420px;
+  padding: 24px;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+  transform: translateY(20px);
+  transition: transform 0.3s;
+}
+.note-modal.on .note-modal-content {
+  transform: translateY(0);
+}
+.note-modal-title {
+  font-family: 'Syne', sans-serif;
+  font-size: 18px;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 12px;
+}
+.note-modal-textarea {
+  width: 100%;
+  height: 120px;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 10px;
+  padding: 12px;
+  color: #fff;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  resize: none;
+  margin-bottom: 18px;
+}
+.note-modal-textarea:focus {
+  border-color: var(--neon);
+  outline: none;
+}
+.note-modal-btns {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+}
+.btn-note-cancel {
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.1);
+  color: rgba(255,255,255,0.7);
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 13px;
+  font-family: 'DM Sans', sans-serif;
+}
+.btn-note-save {
+  background: var(--purple);
+  border: none;
+  color: #fff;
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  font-family: 'DM Sans', sans-serif;
+}
+
+/* Compare progression panels */
+.compare-workspace {
+  width: 100%;
+  margin-top: 24px;
+}
+.compare-viewports {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  margin-bottom: 24px;
+}
+.compare-viewport {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 16px;
+  padding: 16px;
+}
+.viewport-header {
+  font-family: 'Syne', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 12px;
+  text-align: center;
+}
+.viewport-image-wrap {
+  background: #000;
+  border-radius: 12px;
+  overflow: hidden;
+  height: 220px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(124, 92, 191, 0.2);
+}
+.viewport-image-wrap img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+.viewport-findings {
+  margin-top: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.compare-metrics-card {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 18px;
+  padding: 20px;
+}
+.compare-metrics-card h4 {
+  font-family: 'Syne', sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 16px;
+}
+.compare-metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-bottom: 20px;
+}
+.metric-delta {
+  background: rgba(255,255,255,0.02);
+  border: 1px solid rgba(255,255,255,0.05);
+  border-radius: 12px;
+  padding: 12px;
+  text-align: center;
+}
+.delta-label {
+  font-size: 11px;
+  color: rgba(255,255,255,0.45);
+  margin-bottom: 6px;
+}
+.delta-value {
+  font-family: 'Syne', sans-serif;
+  font-size: 24px;
+  font-weight: 800;
+}
+.delta-value.pos {
+  color: #f87171;
+}
+.delta-value.neg {
+  color: #4ade80;
+}
+.delta-value.zero {
+  color: rgba(255,255,255,0.6);
+}
+.compare-delta-summary {
+  padding: 14px 18px;
+  border-radius: 10px;
+  font-size: 13px;
+  line-height: 1.5;
+}
+.compare-delta-summary.alert-danger {
+  background: rgba(248,113,113,0.12);
+  border: 1px solid rgba(248,113,113,0.3);
+  color: #f87171;
+}
+.compare-delta-summary.alert-success {
+  background: rgba(74,222,128,0.12);
+  border: 1px solid rgba(74,222,128,0.3);
+  color: #4ade80;
+}
+.compare-delta-summary.alert-stable {
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.1);
+  color: rgba(255,255,255,0.8);
+}
+@media (max-width: 1024px) {
+  .up-container {
+    flex-direction: column;
+  }
+  .up-sidebar {
+    width: 100%;
+    border-right: none;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  }
+}
 </style>
 </head>
 <body>
@@ -652,7 +1232,7 @@ h1 .ac::after{
 <div id="home" class="pg on">
 
   <nav>
-    <div class="logo">
+    <div class="logo" onclick="goHome()">
       <div class="logo-box">🦷</div>
       <div>DentOmni<small>SMART DENTAL CARE</small></div>
     </div>
@@ -883,7 +1463,7 @@ h1 .ac::after{
 <!-- ════ HOW IT WORKS PAGE ════ -->
 <div id="how-works" class="pg">
   <nav>
-    <div class="logo">
+    <div class="logo" onclick="goHome()">
       <div class="logo-box">🦷</div>
       <div>DentOmni<small>SMART DENTAL CARE</small></div>
     </div>
@@ -978,7 +1558,7 @@ h1 .ac::after{
 <!-- ════ UPLOAD PAGE ════ -->
 <div id="upload" class="pg">
   <nav>
-    <div class="logo">
+    <div class="logo" onclick="goHome()">
       <div class="logo-box">🦷</div>
       <div>DentOmni<small>SMART DENTAL CARE</small></div>
     </div>
@@ -992,60 +1572,161 @@ h1 .ac::after{
     </div>
   </nav>
 
-  <div class="up-body">
-    <button class="btn-back" onclick="goHome()">← Back to Home</button>
-    <div class="up-title">AI Dental Scan</div>
-    <div class="up-sub">Upload your dental X-ray and select a detection model</div>
-
-    <div class="model-sec-lbl">Select Detection Model</div>
-    <div class="model-grid">
-      <div class="mcard sel" id="mc1" onclick="selModel(1)">
-        <div class="mc-name">Faster R-CNN + ResNet-50</div>
-        <div class="mc-desc">Two-stage detector with Feature Pyramid Network. Produces bounding boxes with precise localisation. Best for dental lesion detection.</div>
-        <span class="mc-tag t-rec">⭐ Recommended · 87.9% Overall Accuracy</span>
+  <div class="up-container">
+    <!-- Patient History Sidebar -->
+    <div class="up-sidebar" id="upSidebar">
+      <div class="sidebar-header">
+        <h3>Patient History</h3>
+        <button class="btn-clear-history" onclick="clearHistory()">Clear All</button>
       </div>
-      <div class="mcard" id="mc2" onclick="selModel(2)">
-        <div class="mc-name">ResNet-50 Standalone</div>
-        <div class="mc-desc">Single-stage image-level classifier. Faster inference. Classifies the whole image — no bounding box output.</div>
-        <span class="mc-tag t-fast">⚡ Fast · Image-level Classification</span>
+      <input type="text" class="sidebar-search" id="sidebarSearch" placeholder="Search past scans..." oninput="filterHistory()">
+      <div class="sidebar-list" id="sidebarList">
+        <!-- History cards dynamically populated -->
       </div>
     </div>
 
-    <div class="uzone" id="uzone">
-      <input type="file" id="fInput" accept="image/*" onchange="handleFile(event)">
-      <div class="u-icon">🩻</div>
-      <div class="u-txt">Drop your X-ray here or click to browse</div>
-      <div class="u-hint">Supports panoramic and periapical dental X-rays</div>
-      <div class="u-fmts">
-        <span class="ftag">JPEG</span><span class="ftag">PNG</span>
-        <span class="ftag">DICOM</span><span class="ftag">TIFF</span><span class="ftag">BMP</span>
+    <!-- Main Workspace -->
+    <div class="up-workspace">
+      <div class="up-body-header" style="width: 100%; max-width: 860px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+        <button class="btn-back" style="margin-bottom:0;" onclick="goHome()">← Back to Home</button>
+        
+        <!-- Mode Switcher -->
+        <div class="mode-switcher" style="display:flex; background:rgba(255,255,255,0.05); padding:4px; border-radius:10px; border:1px solid rgba(255,255,255,0.08);">
+          <button class="mode-tab active" id="tabSingle" onclick="setMode('single')" style="background:none; border:none; color:rgba(255,255,255,0.6); padding:8px 16px; border-radius:8px; font-size:12.5px; font-weight:600; cursor:pointer; transition:all 0.2s;">Single Scan</button>
+          <button class="mode-tab" id="tabCompare" onclick="setMode('compare')" style="background:none; border:none; color:rgba(255,255,255,0.6); padding:8px 16px; border-radius:8px; font-size:12.5px; font-weight:600; cursor:pointer; transition:all 0.2s;">Compare Scans</button>
+        </div>
       </div>
-    </div>
 
-    <div class="prev-area" id="prevArea">
-      <div class="prev-wrap"><img id="prevImg" src="" alt="preview"></div>
-      <div class="prev-info">
-        <span class="prev-name" id="prevName"></span>
-        <button class="prev-rm" onclick="removeFile()">✕ Remove</button>
+      <!-- Single Scan Work Area -->
+      <div class="view-panel active" id="viewSingle" style="width: 100%; max-width: 860px;">
+        <div class="up-title" style="margin-bottom: 8px;">AI Dental Scan</div>
+        <div class="up-sub" style="margin-bottom: 36px;">Upload your dental X-ray and select a detection model</div>
+
+        <div class="model-sec-lbl">Select Detection Model</div>
+        <div class="model-grid">
+          <div class="mcard sel" id="mc1" onclick="selModel(1)">
+            <div class="mc-name">Faster R-CNN + ResNet-50</div>
+            <div class="mc-desc">Two-stage detector with Feature Pyramid Network. Produces bounding boxes with precise localisation. Best for dental lesion detection.</div>
+            <span class="mc-tag t-rec">⭐ Recommended · 87.9% Overall Accuracy</span>
+          </div>
+          <div class="mcard" id="mc2" onclick="selModel(2)">
+            <div class="mc-name">ResNet-50 Standalone</div>
+            <div class="mc-desc">Single-stage image-level classifier. Faster inference. Classifies the whole image — no bounding box output.</div>
+            <span class="mc-tag t-fast">⚡ Fast · Image-level Classification</span>
+          </div>
+        </div>
+
+        <div class="uzone" id="uzone">
+          <input type="file" id="fInput" accept="image/*" onchange="handleFile(event)" multiple>
+          <div class="u-icon">🩻</div>
+          <div class="u-txt">Drop your X-ray here or click to browse</div>
+          <div class="u-hint">Supports panoramic and periapical dental X-rays (Multiple select enabled)</div>
+          <div class="u-fmts">
+            <span class="ftag">JPEG</span><span class="ftag">PNG</span>
+            <span class="ftag">DICOM</span><span class="ftag">TIFF</span><span class="ftag">BMP</span>
+          </div>
+        </div>
+
+        <!-- Batch Queue Panel -->
+        <div class="batch-queue-wrap" id="batchQueueWrap" style="display:none; margin-bottom: 20px;">
+          <div class="batch-queue-header">
+            <h4>Batch Upload Queue (<span id="batchCount">0</span> files)</h4>
+            <button class="btn-clear-queue" onclick="clearQueue()">Cancel Batch</button>
+          </div>
+          <div class="batch-progress-bar-wrap">
+            <div class="batch-progress-bar" id="batchProgress" style="width:0%;"></div>
+          </div>
+          <div class="batch-queue-list" id="batchQueueList">
+            <!-- Dynamic elements -->
+          </div>
+        </div>
+
+        <div class="prev-area" id="prevArea">
+          <div class="prev-wrap"><img id="prevImg" src="" alt="preview"></div>
+          <div class="prev-info">
+            <span class="prev-name" id="prevName"></span>
+            <button class="prev-rm" onclick="removeFile()">✕ Remove</button>
+          </div>
+        </div>
+
+        <button class="btn-analyze" id="aBtn" onclick="runAnalysis()" disabled>
+          <div class="spin" id="spin"></div>
+          <span id="aTxt">🔬 Upload an image to analyse</span>
+        </button>
+
+        <div class="res-area" id="resArea">
+          <div class="res-ttl">🎯 Detection Results</div>
+          <div class="res-grid" id="resGrid"></div>
+          
+          <div id="annWrap" class="ann-wrap" style="display:none; text-align:center;">
+            <div class="ann-title">📍 Annotated X-Ray — AI Detections</div>
+            <div id="annImgContainer" style="position: relative; display: inline-block; max-width:100%;">
+              <img id="annImg" src="" alt="Annotated X-Ray with AI bounding boxes" style="width:100%; display:block;"/>
+              <div id="overlayLayer" style="position: absolute; inset: 0; pointer-events: none;"></div>
+            </div>
+          </div>
+
+          <!-- Interactive Odontogram teeth map -->
+          <div class="odontogram-wrap" id="odontogramWrap" style="display:none;">
+            <div class="odontogram-title">🦷 Interactive Clinician Odontogram (UNS 1-32 teeth map)</div>
+            <p style="font-size:12px; color:rgba(255,255,255,0.45); margin-bottom:12px; text-align:left;">Click a tooth to view details or add clinical notes. Red cells denote AI flagged findings.</p>
+            <div class="odontogram-grid">
+              <div class="odontogram-row" id="odontogramUpper"></div>
+              <div style="text-align:center; font-size:10px; color:rgba(255,255,255,0.3); letter-spacing:1px; margin:4px 0;">UPPER JAW (1-16) / LOWER JAW (32-17)</div>
+              <div class="odontogram-row" id="odontogramLower"></div>
+            </div>
+          </div>
+
+          <button class="btn-report" onclick="downloadReport()">
+            📄 Download Analysis Report
+          </button>
+          <div class="model-note" id="modelNote"></div>
+        </div>
       </div>
-    </div>
 
-    <button class="btn-analyze" id="aBtn" onclick="runAnalysis()" disabled>
-      <div class="spin" id="spin"></div>
-      <span id="aTxt">🔬 Upload an image to analyse</span>
-    </button>
+      <!-- Compare Progression Work Area -->
+      <div class="view-panel" id="viewCompare" style="width: 100%; max-width: 860px; display:none;">
+        <div class="up-title">Progression Comparison</div>
+        <div class="up-sub">Select a baseline scan and a follow-up scan from the Patient History sidebar to compare details.</div>
+        
+        <div class="compare-selection-warning" id="compareSelectionWarning" style="background:rgba(255,255,255,0.03); border:1px dashed rgba(255,255,255,0.15); border-radius:14px; padding:40px; text-align:center; color:rgba(255,255,255,0.5);">
+          Please select baseline and follow-up scans from the Patient History sidebar to analyze.
+        </div>
 
-    <div class="res-area" id="resArea">
-      <div class="res-ttl">🎯 Detection Results</div>
-      <div class="res-grid" id="resGrid"></div>
-      <div id="annWrap" class="ann-wrap" style="display:none;">
-        <div class="ann-title">📍 Annotated X-Ray — AI Detections</div>
-        <img id="annImg" src="" alt="Annotated X-Ray with AI bounding boxes"/>
+        <div class="compare-workspace" id="compareWorkspace" style="display:none; width: 100%;">
+          <div class="compare-viewports">
+            <div class="compare-viewport">
+              <div class="viewport-header">Baseline Scan (<span id="compDate1">--</span>)</div>
+              <div class="viewport-image-wrap"><img id="compImg1" src="" alt="Baseline Image"></div>
+              <div class="viewport-findings" id="compFindings1"></div>
+            </div>
+            <div class="compare-viewport">
+              <div class="viewport-header">Follow-up Scan (<span id="compDate2">--</span>)</div>
+              <div class="viewport-image-wrap"><img id="compImg2" src="" alt="Follow-up Image"></div>
+              <div class="viewport-findings" id="compFindings2"></div>
+            </div>
+          </div>
+          
+          <div class="compare-metrics-card">
+            <h4>AI Progression Analysis</h4>
+            <div class="compare-metrics-grid">
+              <div class="metric-delta">
+                <div class="delta-label">Caries Probability Delta</div>
+                <div class="delta-value" id="deltaCaries">--</div>
+              </div>
+              <div class="metric-delta">
+                <div class="delta-label">Lesion Probability Delta</div>
+                <div class="delta-value" id="deltaLesion">--</div>
+              </div>
+              <div class="metric-delta">
+                <div class="delta-label">Detected Box Count Delta</div>
+                <div class="delta-value" id="deltaBoxes">--</div>
+              </div>
+            </div>
+            <div class="compare-delta-summary" id="compareDeltaSummary"></div>
+          </div>
+        </div>
       </div>
-      <button class="btn-report" onclick="downloadReport()">
-        📄 Download Analysis Report
-      </button>
-      <div class="model-note" id="modelNote"></div>
     </div>
   </div>
 </div>
@@ -1057,6 +1738,7 @@ function goUpload(){
   document.getElementById('how-works').classList.remove('on');
   document.getElementById('upload').classList.add('on');
   window.scrollTo(0,0);
+  initPremiumFeatures();
 }
 function goHome(){
   document.getElementById('upload').classList.remove('on');
@@ -1082,25 +1764,55 @@ function selModel(n){
 // ── file ──
 let hasFile=false;
 function handleFile(e){
-  const f=e.target.files[0]; if(!f)return;
-  const r=new FileReader();
-  r.onload=ev=>{
-    document.getElementById('prevImg').src=ev.target.result;
-    document.getElementById('prevArea').classList.add('on');
-    document.getElementById('prevName').textContent=f.name+' · '+(f.size/1024).toFixed(1)+' KB';
-    document.getElementById('uzone').style.display='none';
-    hasFile=true;
-    document.getElementById('aBtn').disabled=false;
-    document.getElementById('aTxt').textContent='🔬 Analyse X-Ray';
+  const files = e.target.files;
+  if (!files || files.length === 0) return;
+  
+  if (files.length === 1) {
+    batchQueue = [];
+    document.getElementById('batchQueueWrap').style.display = 'none';
+    
+    const f = files[0];
+    const r = new FileReader();
+    r.onload = ev => {
+      currentUploadedImageURL = ev.target.result;
+      document.getElementById('prevImg').src = ev.target.result;
+      document.getElementById('prevArea').classList.add('on');
+      document.getElementById('prevName').textContent = f.name + ' · ' + (f.size / 1024).toFixed(1) + ' KB';
+      document.getElementById('uzone').style.display = 'none';
+      hasFile = true;
+      document.getElementById('aBtn').disabled = false;
+      document.getElementById('aTxt').textContent = '🔬 Analyse X-Ray';
+      document.getElementById('resArea').classList.remove('on');
+    };
+    r.readAsDataURL(f);
+  } else {
+    // Batch Mode
+    batchQueue = Array.from(files).map((file, idx) => ({
+      id: 'batch_' + idx + '_' + Date.now(),
+      file: file,
+      status: 'pending',
+      result: null
+    }));
+    
+    hasFile = true;
+    document.getElementById('prevArea').classList.remove('on');
+    document.getElementById('uzone').style.display = 'none';
+    document.getElementById('batchQueueWrap').style.display = 'block';
+    
+    document.getElementById('aBtn').disabled = false;
+    document.getElementById('aTxt').textContent = `🔬 Analyze Batch (${files.length} Scans)`;
     document.getElementById('resArea').classList.remove('on');
-  };
-  r.readAsDataURL(f);
+    
+    renderBatchQueue();
+  }
 }
 function removeFile(){
   document.getElementById('prevArea').classList.remove('on');
-  document.getElementById('uzone').style.display='block';
+  document.getElementById('uzone').style.display = 'block';
   document.getElementById('fInput').value='';
   hasFile=false;
+  batchQueue = [];
+  document.getElementById('batchQueueWrap').style.display = 'none';
   document.getElementById('aBtn').disabled=true;
   document.getElementById('aTxt').textContent='🔬 Upload an image to analyse';
   document.getElementById('resArea').classList.remove('on');
@@ -1112,8 +1824,15 @@ uz.addEventListener('dragover',e=>{e.preventDefault();uz.classList.add('dov');})
 uz.addEventListener('dragleave',()=>uz.classList.remove('dov'));
 uz.addEventListener('drop',e=>{
   e.preventDefault();uz.classList.remove('dov');
-  const f=e.dataTransfer.files[0];
-  if(f){const dt=new DataTransfer();dt.items.add(f);document.getElementById('fInput').files=dt.files;handleFile({target:{files:[f]}});}
+  const files = e.dataTransfer.files;
+  if(files.length > 0){
+    const dt = new DataTransfer();
+    for(let i=0; i<files.length; i++) {
+      dt.items.add(files[i]);
+    }
+    document.getElementById('fInput').files = dt.files;
+    handleFile({target:{files:dt.files}});
+  }
 });
 
 // ── ANALYSIS (real API) ──
@@ -1123,6 +1842,11 @@ let lastFileName = '';
 
 function runAnalysis(){
   if(!hasFile) return;
+  if (batchQueue.length > 0) {
+    runBatchAnalysis();
+    return;
+  }
+  
   const fileInput = document.getElementById('fInput');
   const file = fileInput.files[0];
   if(!file) return;
@@ -1139,6 +1863,8 @@ function runAnalysis(){
   fd.append('file', file);
   fd.append('model', modelName);
 
+  activeOdontogramNotes = {}; // Reset notes for new scan
+
   fetch(`${API}/predict`, {method:'POST', body:fd})
     .then(r => {
       if(!r.ok) return r.json().then(e => { throw new Error(e.detail || r.statusText); });
@@ -1150,6 +1876,26 @@ function runAnalysis(){
       txt.textContent='✅ Done — Analyse Again';
       lastResult = data;
       showResults(data);
+      
+      // Save original and annotated scan with scale down compression to prevent local storage quota limit issues
+      if (currentUploadedImageURL) {
+        getCompressedDataURL(currentUploadedImageURL, (compressedOriginal) => {
+          data.original_image = compressedOriginal;
+          data.filename = lastFileName;
+          
+          if (data.annotated_image) {
+            const fullBase64 = 'data:image/png;base64,' + data.annotated_image;
+            getCompressedDataURL(fullBase64, (compressedAnnotated) => {
+              data.annotated_image = compressedAnnotated.split(',')[1];
+              saveScanToHistory(data);
+            });
+          } else {
+            saveScanToHistory(data);
+          }
+        });
+      } else {
+        saveScanToHistory(data);
+      }
     })
     .catch(err => {
       sp.style.display='none';
@@ -1183,6 +1929,34 @@ function showResults(data){
     ? 'Faster R-CNN + ResNet-50-FPN · 41.3M params · 70 epochs'
     : 'ResNet-50 Classifier · Image-level · No bounding boxes';
   n.textContent = `Model: ${modelLabel} · Inference: ${data.inference_time_ms}ms`;
+
+  let boxesHTML = '';
+  if (selM === 1 && boxes.length > 0) {
+    boxesHTML = `
+      <div class="findings-wrap" style="grid-column: span 2; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; padding: 16px; margin-top: 14px;">
+        <h4 style="font-family:'Syne',sans-serif; font-size:14px; font-weight:700; color:#fff; margin-bottom:12px; text-align:left;">📍 AI Bounding Box Localizations</h4>
+        <div class="findings-grid" style="display:grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px;">
+          ${boxes.map((box, index) => {
+            const toothNum = mapCoordinatesToTeeth(box.bbox, data.image_size.width, data.image_size.height);
+            const confPct = Math.round(box.confidence * 100);
+            return `
+              <div class="finding-card" 
+                   style="background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); border-radius:10px; padding:10px; cursor:pointer; transition:all 0.2s;"
+                   onmouseenter="highlightBox(${index}, true)" 
+                   onmouseleave="highlightBox(${index}, false)"
+                   onclick="focusTooth(${toothNum})">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+                  <span style="font-size:12px; font-weight:700; color:#fff; text-transform:capitalize;">${box.class}</span>
+                  <span style="font-size:11px; background:rgba(124,92,191,0.2); color:var(--neon); padding:2px 6px; border-radius:10px; font-weight:600;">${confPct}%</span>
+                </div>
+                <div style="font-size:11px; color:rgba(255,255,255,0.5); text-align:left;">Matches Tooth ${toothNum} (UNS)</div>
+              </div>
+            `;
+          }).join('')}
+        </div>
+      </div>
+    `;
+  }
 
   g.innerHTML = `
     <div class="gauge-row">
@@ -1220,6 +1994,8 @@ function showResults(data){
       </div>
       <span class="rst ${anyDetected ? 'rst-d' : 'rst-c'}">${anyDetected ? 'See a Dentist' : 'Routine Care'}</span>
     </div>
+
+    ${boxesHTML}
   `;
 
   // Show annotated image if available (Faster R-CNN)
@@ -1228,8 +2004,49 @@ function showResults(data){
   if(data.annotated_image && annWrap && annImg){
     annImg.src = 'data:image/png;base64,' + data.annotated_image;
     annWrap.style.display = 'block';
+    renderOverlayBoxes(boxes, data.image_size.width, data.image_size.height);
   } else if(annWrap){
     annWrap.style.display = 'none';
+  }
+
+  // Update Odontogram
+  const oWrap = document.getElementById('odontogramWrap');
+  if (oWrap) {
+    oWrap.style.display = 'block';
+    
+    // Clear previous flags & notes badges
+    document.querySelectorAll('.tooth-cell').forEach(cell => {
+      cell.classList.remove('flagged');
+      cell.classList.remove('tooth-has-notes');
+      const dot = cell.querySelector('.tooth-dot');
+      if (dot) dot.remove();
+    });
+    
+    // Populate notes badges
+    for (const toothNum in activeOdontogramNotes) {
+      const cell = document.getElementById(`tooth-cell-${toothNum}`);
+      if (cell) cell.classList.add('tooth-has-notes');
+    }
+    
+    // Flag teeth from boxes
+    boxes.forEach(box => {
+      const toothNum = mapCoordinatesToTeeth(box.bbox, data.image_size.width, data.image_size.height);
+      const cell = document.getElementById(`tooth-cell-${toothNum}`);
+      if (cell) {
+        cell.classList.add('flagged');
+        if (!cell.querySelector('.tooth-dot')) {
+          const dot = document.createElement('div');
+          dot.className = 'tooth-dot';
+          cell.appendChild(dot);
+        }
+      }
+    });
+  }
+
+  // Hide batch report button if it was displaying from a previous batch run
+  const batchBtn = document.getElementById('btnBatchReport');
+  if (batchBtn) {
+    batchBtn.style.display = 'none';
   }
 
   document.getElementById('resArea').classList.add('on');
@@ -1566,15 +2383,18 @@ window.addEventListener('scroll',()=>{
 
 // ── NEON DNA STRING ──
 const cvs=document.getElementById('neonCvs');
-const ctx=cvs.getContext('2d');
-function resizeCvs(){cvs.width=window.innerWidth;cvs.height=window.innerHeight;}
-resizeCvs();
-window.addEventListener('resize',resizeCvs);
+const ctx=cvs ? cvs.getContext('2d') : null;
+function resizeCvs(){if(cvs){cvs.width=window.innerWidth;cvs.height=window.innerHeight;}}
+if(cvs) {
+  resizeCvs();
+  window.addEventListener('resize',resizeCvs);
+}
 
 let t=0,scrolled=false;
 window.addEventListener('scroll',()=>{scrolled=window.scrollY>60;});
 
 function drawNeon(){
+  if(!ctx || !cvs) return;
   ctx.clearRect(0,0,cvs.width,cvs.height);
   if(!scrolled) return;
 
@@ -1726,7 +2546,937 @@ if(sliderHandle && xraySlider) {
     setSliderPosition(e.touches[0].clientX - rect.left);
   }, {passive: true});
 }
+
+// ── CLINICAL SUITE EXTENSIONS JS ENGINE ──
+let isCompareMode = false;
+let compareBase = null;
+let compareFollow = null;
+
+let batchQueue = [];
+let batchResults = [];
+let isBatchRunning = false;
+let activeOdontogramNotes = {};
+let currentUploadedImageURL = '';
+
+let isPremiumInitialized = false;
+function initPremiumFeatures() {
+  if (isPremiumInitialized) {
+    renderHistorySidebar();
+    return;
+  }
+  generateOdontogram();
+  renderHistorySidebar();
+  isPremiumInitialized = true;
+}
+
+// Mode Selector (Single vs Compare)
+function setMode(mode) {
+  isCompareMode = (mode === 'compare');
+  
+  const tabSingle = document.getElementById('tabSingle');
+  const tabCompare = document.getElementById('tabCompare');
+  const viewSingle = document.getElementById('viewSingle');
+  const viewCompare = document.getElementById('viewCompare');
+  
+  if (isCompareMode) {
+    tabSingle.classList.remove('active');
+    tabCompare.classList.add('active');
+    viewSingle.style.display = 'none';
+    viewCompare.style.display = 'block';
+    renderCompareMode();
+  } else {
+    tabSingle.classList.add('active');
+    tabCompare.classList.remove('active');
+    viewSingle.style.display = 'block';
+    viewCompare.style.display = 'none';
+  }
+  
+  // Re-render sidebar to update action buttons based on mode
+  renderHistorySidebar();
+}
+
+// Image Compression Helper (canvas scaling)
+function getCompressedDataURL(imgSrc, callback) {
+  if (!imgSrc) return callback('');
+  const img = new Image();
+  img.onload = function() {
+    const canvas = document.createElement('canvas');
+    const maxW = 360;
+    const scale = Math.min(1, maxW / img.width);
+    canvas.width = img.width * scale;
+    canvas.height = img.height * scale;
+    
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+    callback(canvas.toDataURL('image/jpeg', 0.75));
+  };
+  img.src = imgSrc;
+}
+
+// History LocalStorage functions
+function getHistory() {
+  try {
+    const raw = localStorage.getItem('dentomni_scan_history');
+    if (!raw) return [];
+    const parsed = JSON.parse(raw);
+    if (!Array.isArray(parsed)) return [];
+    // Filter out old/invalid scans to prevent runtime TypeErrors
+    return parsed.filter(item => item && item.caries && item.periapical_lesion);
+  } catch (e) {
+    return [];
+  }
+}
+
+function saveScanToHistory(predictionData) {
+  let history = getHistory();
+  
+  if (!predictionData.id) {
+    predictionData.id = 'scan_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+  }
+  if (!predictionData.timestamp) {
+    predictionData.timestamp = Date.now();
+  }
+  if (!predictionData.filename) {
+    predictionData.filename = lastFileName || 'unnamed_xray.png';
+  }
+  if (!predictionData.clinical_notes) {
+    predictionData.clinical_notes = { ...activeOdontogramNotes };
+  }
+  
+  const existingIdx = history.findIndex(item => item.id === predictionData.id);
+  
+  if (existingIdx >= 0) {
+    history[existingIdx] = predictionData;
+  } else {
+    history.unshift(predictionData);
+  }
+  
+  // Pruning
+  const maxHistoryLength = 20;
+  if (history.length > maxHistoryLength) {
+    history = history.slice(0, maxHistoryLength);
+  }
+  
+  let success = false;
+  while (!success && history.length > 0) {
+    try {
+      localStorage.setItem('dentomni_scan_history', JSON.stringify(history));
+      success = true;
+    } catch (e) {
+      console.warn("Storage full, pruning oldest...");
+      history.pop();
+    }
+  }
+  
+  renderHistorySidebar();
+}
+
+function deleteHistoryItem(id, event) {
+  if (event) event.stopPropagation();
+  let history = getHistory();
+  history = history.filter(item => item.id !== id);
+  localStorage.setItem('dentomni_scan_history', JSON.stringify(history));
+  
+  if (compareBase && compareBase.id === id) compareBase = null;
+  if (compareFollow && compareFollow.id === id) compareFollow = null;
+  
+  renderHistorySidebar();
+  if (isCompareMode) {
+    renderCompareMode();
+  }
+}
+
+function clearHistory() {
+  if (confirm("Are you sure you want to clear all patient scan history?")) {
+    localStorage.removeItem('dentomni_scan_history');
+    compareBase = null;
+    compareFollow = null;
+    renderHistorySidebar();
+    if (isCompareMode) {
+      renderCompareMode();
+    }
+  }
+}
+
+function renderHistorySidebar() {
+  const list = document.getElementById('sidebarList');
+  if (!list) return;
+  
+  const history = getHistory();
+  const searchVal = document.getElementById('sidebarSearch') ? document.getElementById('sidebarSearch').value.toLowerCase().trim() : '';
+  
+  list.innerHTML = '';
+  
+  const filtered = history.filter(item => {
+    return item.filename.toLowerCase().includes(searchVal) || 
+           (item.model_used && item.model_used.toLowerCase().includes(searchVal));
+  });
+  
+  if (filtered.length === 0) {
+    list.innerHTML = `<div style="text-align:center; padding:20px 0; color:rgba(255,255,255,0.3); font-size:12px;">No scans found</div>`;
+    return;
+  }
+  
+  filtered.forEach(item => {
+    const cariesPct = Math.round(item.caries.confidence * 100);
+    const lesionPct = Math.round(item.periapical_lesion.confidence * 100);
+    const dateStr = new Date(item.timestamp).toLocaleDateString('en-GB', {day:'2-digit', month:'short'});
+    
+    const div = document.createElement('div');
+    div.className = `history-item ${lastResult && lastResult.id === item.id ? 'active' : ''}`;
+    div.setAttribute('data-id', item.id);
+    div.onclick = () => selectHistoryItem(item.id);
+    
+    let actionButtons = '';
+    if (isCompareMode) {
+      const isBaseSelected = compareBase && compareBase.id === item.id;
+      const isFollowSelected = compareFollow && compareFollow.id === item.id;
+      
+      actionButtons = `
+        <div class="history-item-actions" onclick="event.stopPropagation();">
+          <button class="btn-comp-action ${isBaseSelected ? 'selected' : ''}" onclick="setCompareItem('${item.id}', 'base', event)">
+            ${isBaseSelected ? '✓ Baseline' : 'Set Baseline'}
+          </button>
+          <button class="btn-comp-action ${isFollowSelected ? 'selected' : ''}" onclick="setCompareItem('${item.id}', 'follow', event)">
+            ${isFollowSelected ? '✓ Follow-up' : 'Set Follow-up'}
+          </button>
+        </div>
+      `;
+    }
+    
+    div.innerHTML = `
+      <span class="history-item-delete" onclick="deleteHistoryItem('${item.id}', event)">✕</span>
+      <div class="history-item-header">
+        <span class="history-item-title" title="${item.filename}">${item.filename}</span>
+        <span class="history-item-date">${dateStr}</span>
+      </div>
+      <div class="history-item-meta">
+        <span class="history-item-badge caries">Caries: ${cariesPct}%</span>
+        <span class="history-item-badge lesion">Lesion: ${lesionPct}%</span>
+      </div>
+      ${actionButtons}
+    `;
+    
+    list.appendChild(div);
+  });
+}
+
+function filterHistory() {
+  renderHistorySidebar();
+}
+
+function selectHistoryItem(id) {
+  const history = getHistory();
+  const item = history.find(x => x.id === id);
+  if (!item) return;
+  
+  document.querySelectorAll('.history-item').forEach(el => {
+    el.classList.toggle('active', el.getAttribute('data-id') === id);
+  });
+  
+  if (isCompareMode) return;
+  
+  lastResult = item;
+  lastFileName = item.filename;
+  
+  const prevImg = document.getElementById('prevImg');
+  const prevArea = document.getElementById('prevArea');
+  const uzone = document.getElementById('uzone');
+  
+  if (item.original_image) {
+    prevImg.src = item.original_image;
+  } else if (item.annotated_image) {
+    prevImg.src = 'data:image/png;base64,' + item.annotated_image;
+  } else {
+    prevImg.src = '';
+  }
+  
+  prevArea.classList.add('on');
+  document.getElementById('prevName').textContent = item.filename;
+  uzone.style.display = 'none';
+  
+  document.getElementById('aBtn').disabled = false;
+  document.getElementById('aTxt').textContent = '🔬 Re-analyse X-Ray';
+  
+  selM = item.model_used === 'resnet50' ? 2 : 1;
+  document.getElementById('mc1').classList.toggle('sel', selM === 1);
+  document.getElementById('mc2').classList.toggle('sel', selM === 2);
+  
+  activeOdontogramNotes = { ...item.clinical_notes };
+  
+  showResults(item);
+}
+
+function setCompareItem(id, type, event) {
+  if (event) event.stopPropagation();
+  const history = getHistory();
+  const item = history.find(x => x.id === id);
+  if (!item) return;
+  
+  if (type === 'base') {
+    compareBase = item;
+  } else {
+    compareFollow = item;
+  }
+  
+  renderHistorySidebar();
+  renderCompareMode();
+}
+
+// Compare progression functions
+function renderCompareMode() {
+  const warning = document.getElementById('compareSelectionWarning');
+  const workspace = document.getElementById('compareWorkspace');
+  
+  if (!compareBase || !compareFollow) {
+    warning.style.display = 'block';
+    workspace.style.display = 'none';
+    return;
+  }
+  
+  warning.style.display = 'none';
+  workspace.style.display = 'block';
+  
+  document.getElementById('compDate1').textContent = new Date(compareBase.timestamp).toLocaleDateString('en-GB', {day:'2-digit',month:'short'});
+  document.getElementById('compImg1').src = compareBase.annotated_image ? 'data:image/png;base64,' + compareBase.annotated_image : (compareBase.original_image || '');
+  
+  document.getElementById('compDate2').textContent = new Date(compareFollow.timestamp).toLocaleDateString('en-GB', {day:'2-digit',month:'short'});
+  document.getElementById('compImg2').src = compareFollow.annotated_image ? 'data:image/png;base64,' + compareFollow.annotated_image : (compareFollow.original_image || '');
+  
+  renderCompareFindings('compFindings1', compareBase);
+  renderCompareFindings('compFindings2', compareFollow);
+  
+  const cariesDelta = Math.round((compareFollow.caries.confidence - compareBase.caries.confidence) * 100);
+  const lesionDelta = Math.round((compareFollow.periapical_lesion.confidence - compareBase.periapical_lesion.confidence) * 100);
+  const boxDelta = (compareFollow.bounding_boxes || []).length - (compareBase.bounding_boxes || []).length;
+  
+  formatDeltaElement('deltaCaries', cariesDelta, '%');
+  formatDeltaElement('deltaLesion', lesionDelta, '%');
+  formatDeltaElement('deltaBoxes', boxDelta, '', true);
+  
+  let summary = '';
+  if (cariesDelta > 0 || lesionDelta > 0 || boxDelta > 0) {
+    summary = `⚠️ AI analysis suggests potential <strong>disease progression</strong>. Bounding box count increased by ${boxDelta >= 0 ? '+' : ''}${boxDelta}. Please schedule clinical intervention.`;
+    document.getElementById('compareDeltaSummary').className = 'compare-delta-summary alert-danger';
+  } else if (cariesDelta < 0 || lesionDelta < 0 || boxDelta < 0) {
+    summary = `✅ AI analysis shows <strong>disease regression/improvement</strong>. Finding probabilities and localizations have decreased. Continue maintaining current therapeutic regime.`;
+    document.getElementById('compareDeltaSummary').className = 'compare-delta-summary alert-success';
+  } else {
+    summary = `🦷 <strong>Stable findings</strong>. There is no significant change in lesion probability or localization count between the baseline and follow-up scans.`;
+    document.getElementById('compareDeltaSummary').className = 'compare-delta-summary alert-stable';
+  }
+  document.getElementById('compareDeltaSummary').innerHTML = summary;
+}
+
+function renderCompareFindings(elemId, record) {
+  const el = document.getElementById(elemId);
+  const cariesPct = Math.round(record.caries.confidence * 100);
+  const lesionPct = Math.round(record.periapical_lesion.confidence * 100);
+  const numBoxes = (record.bounding_boxes || []).length;
+  
+  el.innerHTML = `
+    <div style="display:flex; justify-content:space-between; font-size:11.5px; color:rgba(255,255,255,0.6); border-bottom:1px solid rgba(255,255,255,0.05); padding-bottom:4px; text-align:left;">
+      <span>Caries Probability:</span>
+      <span style="font-weight:bold; color:#fff">${cariesPct}%</span>
+    </div>
+    <div style="display:flex; justify-content:space-between; font-size:11.5px; color:rgba(255,255,255,0.6); border-bottom:1px solid rgba(255,255,255,0.05); padding-bottom:4px; margin-top:4px; text-align:left;">
+      <span>Lesion Probability:</span>
+      <span style="font-weight:bold; color:#fff">${lesionPct}%</span>
+    </div>
+    <div style="display:flex; justify-content:space-between; font-size:11.5px; color:rgba(255,255,255,0.6); margin-top:4px; text-align:left;">
+      <span>Localized Lesions:</span>
+      <span style="font-weight:bold; color:#fff">${numBoxes} region(s)</span>
+    </div>
+  `;
+}
+
+function formatDeltaElement(elemId, value, suffix = '', signOnly = false) {
+  const el = document.getElementById(elemId);
+  if (!el) return;
+  
+  let formatted = '';
+  let colorClass = 'zero';
+  
+  if (value > 0) {
+    formatted = `+${value}${suffix}`;
+    colorClass = 'pos';
+  } else if (value < 0) {
+    formatted = `${value}${suffix}`;
+    colorClass = 'neg';
+  } else {
+    formatted = `0${suffix}`;
+    colorClass = 'zero';
+  }
+  
+  el.textContent = formatted;
+  el.className = `delta-value ${colorClass}`;
+}
+
+// Bounding box mapping UNS teeth map
+function mapCoordinatesToTeeth(bbox, imgW, imgH) {
+  const x_center = (bbox[0] + bbox[2]) / 2;
+  const y_center = (bbox[1] + bbox[3]) / 2;
+  
+  if (y_center / imgH < 0.55) {
+    let idx = Math.floor((x_center / imgW) * 16);
+    if (idx < 0) idx = 0;
+    if (idx > 15) idx = 15;
+    return idx + 1; 
+  } else {
+    let idx = Math.floor((x_center / imgW) * 16);
+    if (idx < 0) idx = 0;
+    if (idx > 15) idx = 15;
+    return 32 - idx; 
+  }
+}
+
+// Odontogram (Teeth Map) generation
+function generateOdontogram() {
+  const upper = document.getElementById('odontogramUpper');
+  const lower = document.getElementById('odontogramLower');
+  if (!upper || !lower) return;
+  upper.innerHTML = '';
+  lower.innerHTML = '';
+  
+  for (let i = 1; i <= 16; i++) {
+    const cell = document.createElement('div');
+    cell.className = 'tooth-cell';
+    cell.id = `tooth-cell-${i}`;
+    cell.innerHTML = `<span class="tooth-num">${i}</span>`;
+    cell.onclick = () => openToothNoteModal(i);
+    upper.appendChild(cell);
+  }
+  
+  for (let i = 32; i >= 17; i--) {
+    const cell = document.createElement('div');
+    cell.className = 'tooth-cell';
+    cell.id = `tooth-cell-${i}`;
+    cell.innerHTML = `<span class="tooth-num">${i}</span>`;
+    cell.onclick = () => openToothNoteModal(i);
+    lower.appendChild(cell);
+  }
+}
+
+// Interactive highlighting of overlay boxes
+function renderOverlayBoxes(boxes, imgW, imgH) {
+  const layer = document.getElementById('overlayLayer');
+  if (!layer) return;
+  layer.innerHTML = '';
+  
+  boxes.forEach((box, index) => {
+    const [x1, y1, x2, y2] = box.bbox;
+    const left = (x1 / imgW) * 100;
+    const top = (y1 / imgH) * 100;
+    const width = ((x2 - x1) / imgW) * 100;
+    const height = ((y2 - y1) / imgH) * 100;
+    
+    const div = document.createElement('div');
+    div.className = 'highlight-box';
+    div.id = `highlight-box-${index}`;
+    div.style.left = `${left}%`;
+    div.style.top = `${top}%`;
+    div.style.width = `${width}%`;
+    div.style.height = `${height}%`;
+    
+    const toothNum = mapCoordinatesToTeeth(box.bbox, imgW, imgH);
+    div.style.pointerEvents = 'auto';
+    div.onclick = (e) => {
+      e.stopPropagation();
+      focusTooth(toothNum);
+    };
+    div.onmouseenter = () => {
+      highlightBox(index, true);
+    };
+    div.onmouseleave = () => {
+      highlightBox(index, false);
+    };
+    
+    layer.appendChild(div);
+  });
+}
+
+function highlightBox(index, active) {
+  const box = document.getElementById(`highlight-box-${index}`);
+  if (box) {
+    box.classList.toggle('active', active);
+  }
+  
+  const cards = document.querySelectorAll('.finding-card');
+  if (cards[index]) {
+    if (active) {
+      cards[index].style.borderColor = 'var(--neon)';
+      cards[index].style.backgroundColor = 'rgba(124, 92, 191, 0.12)';
+      cards[index].style.transform = 'translateY(-2px)';
+      cards[index].style.boxShadow = '0 4px 12px rgba(124, 92, 191, 0.2)';
+    } else {
+      cards[index].style.borderColor = 'rgba(255,255,255,0.08)';
+      cards[index].style.backgroundColor = 'rgba(255,255,255,0.04)';
+      cards[index].style.transform = 'none';
+      cards[index].style.boxShadow = 'none';
+    }
+  }
+}
+
+function focusTooth(toothNum) {
+  const cell = document.getElementById(`tooth-cell-${toothNum}`);
+  if (cell) {
+    cell.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    cell.style.transform = 'scale(1.2)';
+    cell.style.borderColor = 'var(--neon)';
+    cell.style.boxShadow = '0 0 20px var(--neon)';
+    setTimeout(() => {
+      cell.style.transform = '';
+      cell.style.borderColor = cell.classList.contains('flagged') ? '#f87171' : 'rgba(255, 255, 255, 0.15)';
+      cell.style.boxShadow = cell.classList.contains('flagged') ? '0 0 8px rgba(248, 113, 113, 0.3)' : '';
+    }, 1000);
+    
+    setTimeout(() => {
+      openToothNoteModal(toothNum);
+    }, 400);
+  }
+}
+
+// Notes modal details
+let currentNoteTooth = null;
+function openToothNoteModal(toothNum) {
+  currentNoteTooth = toothNum;
+  const modal = document.getElementById('noteModal');
+  const title = document.getElementById('noteModalTitle');
+  const textarea = document.getElementById('noteModalTextarea');
+  
+  title.textContent = `Clinical Notes — Tooth ${toothNum}`;
+  textarea.value = activeOdontogramNotes[toothNum] || '';
+  
+  modal.classList.add('on');
+}
+
+function closeToothNoteModal() {
+  document.getElementById('noteModal').classList.remove('on');
+  currentNoteTooth = null;
+}
+
+function saveToothNote() {
+  if (currentNoteTooth === null) return;
+  const textarea = document.getElementById('noteModalTextarea');
+  const noteText = textarea.value.trim();
+  
+  if (noteText) {
+    activeOdontogramNotes[currentNoteTooth] = noteText;
+    document.getElementById(`tooth-cell-${currentNoteTooth}`).classList.add('tooth-has-notes');
+  } else {
+    delete activeOdontogramNotes[currentNoteTooth];
+    document.getElementById(`tooth-cell-${currentNoteTooth}`).classList.remove('tooth-has-notes');
+  }
+  
+  if (lastResult) {
+    lastResult.clinical_notes = { ...activeOdontogramNotes };
+    saveScanToHistory(lastResult);
+  }
+  
+  closeToothNoteModal();
+}
+
+// Sequential Batch queue processing
+async function runBatchAnalysis() {
+  if (batchQueue.length === 0) return;
+  
+  isBatchRunning = true;
+  const btn = document.getElementById('aBtn');
+  const sp = document.getElementById('spin');
+  const txt = document.getElementById('aTxt');
+  
+  btn.disabled = true;
+  sp.style.display = 'block';
+  txt.textContent = 'Analyzing Batch...';
+  
+  const modelName = selM === 1 ? 'faster_rcnn' : 'resnet50';
+  batchResults = [];
+  activeOdontogramNotes = {}; // Reset notes
+  
+  for (let i = 0; i < batchQueue.length; i++) {
+    const item = batchQueue[i];
+    item.status = 'analyzing';
+    renderBatchQueue();
+    
+    const fd = new FormData();
+    fd.append('file', item.file);
+    fd.append('model', modelName);
+    
+    try {
+      const response = await fetch(`${API}/predict`, { method: 'POST', body: fd });
+      if (!response.ok) throw new Error(response.statusText);
+      const data = await response.json();
+      
+      item.status = 'complete';
+      item.result = data;
+      item.result.filename = item.file.name;
+      batchResults.push(item.result);
+      
+      await saveBatchResultToHistory(item.file, data);
+      
+    } catch (err) {
+      console.error(err);
+      item.status = 'failed';
+    }
+    
+    renderBatchQueue();
+  }
+  
+  sp.style.display = 'none';
+  btn.disabled = false;
+  txt.textContent = '✅ Batch Complete';
+  isBatchRunning = false;
+  
+  const lastCompleted = batchQueue.filter(x => x.status === 'complete');
+  if (lastCompleted.length > 0) {
+    const lastData = lastCompleted[lastCompleted.length - 1].result;
+    lastResult = lastData;
+    showResults(lastData);
+    
+    // Add batch report button
+    const resArea = document.getElementById('resArea');
+    let batchBtn = document.getElementById('btnBatchReport');
+    if (!batchBtn) {
+      batchBtn = document.createElement('button');
+      batchBtn.className = 'btn-report';
+      batchBtn.id = 'btnBatchReport';
+      batchBtn.style.marginTop = '10px';
+      batchBtn.style.background = 'linear-gradient(90deg, #7c5cbf, #60a5fa)';
+      batchBtn.onclick = downloadConsolidatedBatchReport;
+      
+      const singleReportBtn = document.querySelector('.btn-report');
+      singleReportBtn.parentNode.insertBefore(batchBtn, singleReportBtn.nextSibling);
+    }
+    batchBtn.innerHTML = `📄 Download Consolidated Batch Report (${lastCompleted.length} page(s))`;
+    batchBtn.style.display = 'flex';
+  }
+}
+
+async function saveBatchResultToHistory(file, predictionData) {
+  return new Promise((resolve) => {
+    const r = new FileReader();
+    r.onload = ev => {
+      getCompressedDataURL(ev.target.result, (compressedOriginal) => {
+        predictionData.original_image = compressedOriginal;
+        predictionData.filename = file.name;
+        
+        if (predictionData.annotated_image) {
+          const fullBase64 = 'data:image/png;base64,' + predictionData.annotated_image;
+          getCompressedDataURL(fullBase64, (compressedAnnotated) => {
+            predictionData.annotated_image = compressedAnnotated.split(',')[1];
+            saveScanToHistory(predictionData);
+            resolve();
+          });
+        } else {
+          saveScanToHistory(predictionData);
+          resolve();
+        }
+      });
+    };
+    r.readAsDataURL(file);
+  });
+}
+
+// Multi-page batch report downloader
+function downloadConsolidatedBatchReport() {
+  const completedScans = batchQueue.filter(x => x.status === 'complete' && x.result);
+  if (completedScans.length === 0) return;
+  
+  try {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({
+      orientation: 'portrait',
+      unit: 'mm',
+      format: 'a4'
+    });
+    
+    const primaryNavy = [12, 15, 36];
+    const accentTeal = [14, 116, 144];
+    const mutedSlate = [100, 116, 139];
+    const dangerRed = [220, 38, 38];
+    const safeGreen = [13, 148, 136];
+    const warnOrange = [217, 119, 6];
+    
+    const now = new Date();
+    const dateStr = now.toLocaleDateString('en-GB', {day:'2-digit',month:'long',year:'numeric'});
+    const timeStr = now.toLocaleTimeString('en-GB');
+    
+    completedScans.forEach((item, index) => {
+      if (index > 0) {
+        doc.addPage();
+      }
+      
+      const d = item.result;
+      const cariesPct = Math.round(d.caries.confidence * 100);
+      const lesionPct = Math.round(d.periapical_lesion.confidence * 100);
+      const overallConf = Math.round(Math.max(d.caries.confidence, d.periapical_lesion.confidence) * 100);
+      const anyDetected = d.caries.detected || d.periapical_lesion.detected;
+      const modelName = d.model_used === 'faster_rcnn' ? 'Faster R-CNN + ResNet-50-FPN' : 'ResNet-50 Classifier';
+      
+      const rec = anyDetected
+        ? [
+            '• Schedule a dental appointment within the next 2-4 weeks.',
+            '• Inform your dentist of these AI findings and share this report.',
+            d.caries.detected ? `• Caries detected (${cariesPct}% confidence) — early treatment prevents further decay.` : '',
+            d.periapical_lesion.detected ? `• Periapical lesion flagged (${lesionPct}% confidence) — may require root canal evaluation.` : '',
+            '• Maintain twice-daily brushing and floss daily.',
+          ].filter(Boolean)
+        : [
+            '• No significant dental disease detected by AI analysis.',
+            '• Continue routine dental check-ups every 6 months.',
+            '• Maintain good oral hygiene: brush twice daily, floss daily.',
+            '• Use fluoride toothpaste for optimal protection.',
+          ];
+      
+      const setColor = (c) => doc.setTextColor(c[0], c[1], c[2]);
+      
+      doc.setFillColor(accentTeal[0], accentTeal[1], accentTeal[2]);
+      doc.rect(0, 0, 210, 8, 'F');
+      
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(22);
+      setColor(primaryNavy);
+      doc.text("DentOmni Diagnostics", 20, 24);
+      
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(9.5);
+      setColor(mutedSlate);
+      doc.text(`Consolidated Batch Report — Page ${index + 1} of ${completedScans.length}`, 20, 30);
+      
+      doc.setDrawColor(226, 232, 240);
+      doc.line(20, 35, 190, 35);
+      
+      doc.setFillColor(248, 250, 252);
+      doc.rect(20, 39, 170, 36, 'F');
+      doc.setDrawColor(226, 232, 240);
+      doc.rect(20, 39, 170, 36, 'D');
+      
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(9);
+      setColor(primaryNavy);
+      doc.text("Clinical Patient & Scan Record", 25, 45);
+      
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(8.5);
+      doc.text(`Patient ID: DO-84920 (AI Pre-Screen)`, 25, 51);
+      doc.text(`Scan Date: ${dateStr}`, 25, 56);
+      doc.text(`Scan Time: ${timeStr}`, 25, 61);
+      
+      let displayFileName = d.filename || 'unnamed_xray.png';
+      if (displayFileName.length > 32) {
+        displayFileName = displayFileName.substring(0, 16) + "..." + displayFileName.substring(displayFileName.length - 13);
+      }
+      doc.text(`Image File: ${displayFileName}`, 25, 66);
+      
+      doc.text(`Referring Lab: DentOmni Diagnostics Suite`, 110, 51);
+      doc.text(`Analysis Model: ${modelName}`, 110, 56);
+      doc.text(`Inference Latency: ${d.inference_time_ms} ms`, 110, 61);
+      doc.text(`Report Status: Part of Batch Compilation`, 110, 66);
+      
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(11);
+      setColor(primaryNavy);
+      doc.text("PRIMARY AI DIAGNOSTIC FINDINGS", 20, 84);
+      
+      const cardW = 52;
+      const cardH = 32;
+      const cardY = 89;
+      
+      const cariesColor = cariesPct >= 60 ? dangerRed : (cariesPct >= 35 ? warnOrange : safeGreen);
+      doc.setFillColor(255, 255, 255);
+      doc.setDrawColor(cariesColor[0], cariesColor[1], cariesColor[2]);
+      doc.rect(20, cardY, cardW, cardH, 'FD');
+      
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(8);
+      setColor(mutedSlate);
+      doc.text("Caries Probability", 25, cardY + 7);
+      
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(18);
+      doc.setTextColor(cariesColor[0], cariesColor[1], cariesColor[2]);
+      doc.text(`${cariesPct}%`, 25, cardY + 17);
+      
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(8);
+      setColor(primaryNavy);
+      doc.text(d.caries.detected ? "Detected" : "Not Detected", 25, cardY + 26);
+      
+      const lesionColor = lesionPct >= 60 ? dangerRed : (lesionPct >= 35 ? warnOrange : safeGreen);
+      doc.setFillColor(255, 255, 255);
+      doc.setDrawColor(lesionColor[0], lesionColor[1], lesionColor[2]);
+      doc.rect(79, cardY, cardW, cardH, 'FD');
+      
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(8);
+      setColor(mutedSlate);
+      doc.text("Periapical Lesion", 84, cardY + 7);
+      
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(18);
+      doc.setTextColor(lesionColor[0], lesionColor[1], lesionColor[2]);
+      doc.text(`${lesionPct}%`, 84, cardY + 17);
+      
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(8);
+      setColor(primaryNavy);
+      doc.text(d.periapical_lesion.detected ? "Detected" : "Not Detected", 84, cardY + 26);
+      
+      const overallColor = overallConf >= 60 ? dangerRed : (overallConf >= 35 ? warnOrange : safeGreen);
+      doc.setFillColor(255, 255, 255);
+      doc.setDrawColor(overallColor[0], overallColor[1], overallColor[2]);
+      doc.rect(138, cardY, cardW, cardH, 'FD');
+      
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(8);
+      setColor(mutedSlate);
+      doc.text("Overall Confidence", 143, cardY + 7);
+      
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(18);
+      doc.setTextColor(overallColor[0], overallColor[1], overallColor[2]);
+      doc.text(`${overallConf}%`, 143, cardY + 17);
+      
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(8);
+      setColor(primaryNavy);
+      doc.text("AI certainty score", 143, cardY + 26);
+      
+      const frameY = 126;
+      const frameH = 46;
+      doc.setDrawColor(226, 232, 240);
+      doc.rect(20, frameY, 170, frameH, 'D');
+      
+      if (d.model_used === 'faster_rcnn' && d.annotated_image) {
+        try {
+          const imgH = 42;
+          const imgW = 63;
+          const imgX = 20 + (170 - imgW) / 2;
+          const imgY = frameY + (frameH - imgH) / 2;
+          doc.addImage('data:image/png;base64,' + d.annotated_image, 'PNG', imgX, imgY, imgW, imgH);
+          
+          doc.setFont("helvetica", "normal");
+          doc.setFontSize(7.5);
+          setColor(mutedSlate);
+          doc.text("AI Radiograph Localization Overlay", 105, frameY + frameH - 1.5, { align: "center" });
+        } catch (err) {
+          console.error("PDF addImage failed:", err);
+          doc.setFont("helvetica", "bold");
+          doc.setFontSize(8.5);
+          setColor(dangerRed);
+          doc.text("Image Rendering Error", 105, frameY + 22, { align: "center" });
+        }
+      } else {
+        doc.setFillColor(248, 250, 252);
+        doc.rect(20.5, frameY + 0.5, 169, frameH - 1, 'F');
+        
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(9);
+        setColor(mutedSlate);
+        doc.text("Localization Unavailable (ResNet-50)", 105, frameY + 20, { align: "center" });
+        
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(8);
+        setColor(mutedSlate);
+        doc.text("ResNet-50 does not support localization.", 105, frameY + 26, { align: "center" });
+      }
+      
+      const nextY = 178;
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(11);
+      setColor(primaryNavy);
+      doc.text(anyDetected ? "CLINICAL RECOMMENDATIONS & NEXT STEPS" : "ROUTINE CARE RECOMMENDATIONS", 20, nextY);
+      
+      const assessmentBg = anyDetected ? [254, 242, 242] : [240, 253, 240];
+      const assessmentBorder = anyDetected ? [252, 165, 165] : [153, 246, 228];
+      const assessmentTxtColor = anyDetected ? [220, 38, 38] : [13, 148, 136];
+      
+      doc.setFillColor(assessmentBg[0], assessmentBg[1], assessmentBg[2]);
+      doc.setDrawColor(assessmentBorder[0], assessmentBorder[1], assessmentBorder[2]);
+      doc.rect(20, nextY + 4, 170, 11, 'FD');
+      
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(8.5);
+      doc.setTextColor(assessmentTxtColor[0], assessmentTxtColor[1], assessmentTxtColor[2]);
+      doc.text(anyDetected ? "Attention Required: AI has identified signs of dental pathology." : "Clear Scan: No acute pathology detected by the AI model.", 25, nextY + 11);
+      
+      let bulletY = nextY + 21;
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(9);
+      setColor(primaryNavy);
+      
+      const maxRecs = rec.slice(0, 4);
+      maxRecs.forEach(item => {
+        const cleanText = item.replace(/^•\s*/, '');
+        doc.setFillColor(accentTeal[0], accentTeal[1], accentTeal[2]);
+        doc.circle(24, bulletY - 2.5, 0.8, 'F');
+        
+        const splitLines = doc.splitTextToSize(cleanText, 155);
+        doc.text(splitLines, 28, bulletY - 1.2);
+        bulletY += (splitLines.length * 4.8) + 1.2;
+      });
+      
+      const sigY = 214;
+      doc.setDrawColor(226, 232, 240);
+      doc.line(20, sigY + 10, 80, sigY + 10);
+      doc.line(130, sigY + 10, 190, sigY + 10);
+      
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(7.5);
+      setColor(mutedSlate);
+      doc.text("Dr. / Clinical Reviewer Signature", 20, sigY + 14);
+      doc.text("Date of Clinical Review Verification", 130, sigY + 14);
+      
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(8);
+      setColor(primaryNavy);
+      doc.text("UNVERIFIED AI DIAGNOSIS", 20, sigY + 6);
+      doc.text("____ / ____ / 2026", 130, sigY + 6);
+      
+      const discY = 238;
+      doc.setFillColor(248, 250, 252);
+      doc.rect(20, discY, 170, 24, 'F');
+      doc.setDrawColor(226, 232, 240);
+      doc.rect(20, discY, 170, 24, 'D');
+      
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(7.5);
+      setColor(primaryNavy);
+      doc.text("IMPORTANT CLINICAL NOTICE", 25, discY + 5);
+      
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(7.2);
+      setColor(mutedSlate);
+      const discLines = doc.splitTextToSize("This report is generated by a computer vision model and is designed to assist clinical practitioners. It does NOT constitute a final medical diagnosis. Always consult a qualified dentist for final diagnosis.", 160);
+      doc.text(discLines, 25, discY + 10);
+      
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(7.5);
+      setColor(mutedSlate);
+      doc.text(`Generated by DentOmni Suite v1.0 • Report Date: ${dateStr}`, 20, 274);
+      doc.text("www.dentomni.com", 190, 274, { align: "right" });
+    });
+    
+    doc.save(`DentOmni_Consolidated_Report_${now.toISOString().slice(0,10)}.pdf`);
+  } catch (error) {
+    console.error("Batch PDF generation failed:", error);
+    alert("Could not generate PDF. Check console logs.");
+  }
+}
 </script>
+
+<!-- Tooth Note Modal Popup -->
+<div class="note-modal" id="noteModal">
+  <div class="note-modal-content">
+    <div class="note-modal-title" id="noteModalTitle">Clinical Notes — Tooth 1</div>
+    <textarea class="note-modal-textarea" id="noteModalTextarea" placeholder="Enter clinical notes, diagnoses or recommendations for this tooth..."></textarea>
+    <div class="note-modal-btns">
+      <button class="btn-note-cancel" onclick="closeToothNoteModal()">Cancel</button>
+      <button class="btn-note-save" onclick="saveToothNote()">Save Notes</button>
+    </div>
+  </div>
+</div>
+
 <canvas id="neonCvs" style="position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:50;"></canvas>
 </body>
 </html>
