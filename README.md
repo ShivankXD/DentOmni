@@ -1,7 +1,7 @@
 # DentOmni 🦷
 ### *AI-Powered Dental Diagnostic & Radiograph Analysis Platform*
 
-![DentOmni Banner](<img width="1693" height="929" alt="image" src="https://github.com/user-attachments/assets/b7bd4886-72c6-45cb-a64b-b22eb0cf0e25" />
+(<img width="1693" height="929" alt="image" src="https://github.com/user-attachments/assets/b7bd4886-72c6-45cb-a64b-b22eb0cf0e25" />
 )
 
 <div align="center">
